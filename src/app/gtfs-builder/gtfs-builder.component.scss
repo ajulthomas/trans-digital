@@ -1,0 +1,28 @@
+.gtfs-card {
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 80px;
+
+
+    .gtfs-title {
+        font-weight: semi-bold;
+    }
+
+    .gtfs-subtitle{
+        color: #797878;
+    }
+
+
+    .gtfs-buttons {
+        margin-right: 8px;
+    }
+    
+    .upload-button {
+        color: #ffffff;
+        background-color: #774ed6;
+    }
+
+    .gtfs-data-upload-card {
+        margin-top: 20px;
+    }
+}
