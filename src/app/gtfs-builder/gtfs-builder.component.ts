@@ -2,10 +2,19 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
 import { ExcelUtilsService } from '../services/excel-utils.service';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { AgencyDetailsComponent } from '../agency-details/agency-details.component';
 
 @Component({
   selector: 'app-gtfs-builder',
-  imports: [MatButtonModule, MatStepperModule],
+  imports: [
+    MatButtonModule,
+    MatStepperModule,
+    MatCardModule,
+    MatTabsModule,
+    AgencyDetailsComponent,
+  ],
   templateUrl: './gtfs-builder.component.html',
   styleUrl: './gtfs-builder.component.scss',
 })
