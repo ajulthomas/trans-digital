@@ -8,7 +8,7 @@
             <mat-card-subtitle class="gtfs-subtitle">Convert your bus schedules to GTFS format</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-            <div class="gtfs-data-upload-card">
+            <div class="gtfs-buttons-container">
                 <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
                 <button mat-raised-button (click)="fileInput.click()" class="gtfs-buttons upload-button">Upload bus
                     schedule</button>

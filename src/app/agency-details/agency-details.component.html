@@ -2,11 +2,23 @@
     <!-- <mat-card-header>
         <mat-card-title class="gtfs-title"> GTFS Builder</mat-card-title>
         <mat-card-subtitle class="gtfs-subtitle">Convert your bus schedules to GTFS format</mat-card-subtitle>
-    </mat-card-header> -->
+    </mat-card-header>
     <mat-card-content>
 
         <label for=""><b>Agency Name : &nbsp;</b></label>
         <span>Batik Solo Trans</span>
 
-    </mat-card-content>
+    </mat-card-content> -->
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        @for (column of displayedColumns; track column) {
+        <ng-container [matColumnDef]="column">
+            <th mat-header-cell *matHeaderCellDef> {{ columnNames[column] }} </th>
+            <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+        </ng-container>
+        }
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 </mat-card>
