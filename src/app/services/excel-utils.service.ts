@@ -1,11 +1,13 @@
 import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { read, utils, WorkSheet } from 'xlsx';
+import { Inject } from '@angular/core';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExcelUtilsService {
-  constructor() {}
+  constructor(private messageService: MessageService) {}
 
   route_data: RouteData = {};
 
@@ -13,6 +15,7 @@ export class ExcelUtilsService {
     const reader = new FileReader();
     reader.onload = () => {
       progress.set(100);
+      this.messageService.showMessage('File read successfully');
       const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
       this.processFile(data);
     };
