@@ -5,6 +5,7 @@ import { ExcelUtilsService } from '../services/excel-utils.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AgencyDetailsComponent } from '../agency-details/agency-details.component';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -19,7 +20,10 @@ import { AgencyDetailsComponent } from '../agency-details/agency-details.compone
   styleUrl: './gtfs-builder.component.scss',
 })
 export class GtfsBuilderComponent {
-  constructor(private excelUtilsService: ExcelUtilsService) {}
+  constructor(
+    private excelUtilsService: ExcelUtilsService,
+    private messageService: MessageService
+  ) {}
 
   onFileSelected(event: any) {
     console.log(event.target.files);
@@ -34,6 +38,10 @@ export class GtfsBuilderComponent {
         this.excelUtilsService.readFile(file);
       } else {
         console.log('Not an Excel file');
+        this.messageService.showMessage(
+          '⚠️ Please select an Excel file',
+          'error'
+        );
       }
     }
   }

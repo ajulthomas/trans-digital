@@ -15,7 +15,7 @@ export class ExcelUtilsService {
     const reader = new FileReader();
     reader.onload = () => {
       progress.set(100);
-      this.messageService.showMessage('File read successfully');
+      this.messageService.showMessage('File read successfully 🚀');
       const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
       this.processFile(data);
     };
@@ -27,6 +27,10 @@ export class ExcelUtilsService {
     };
     reader.onerror = (error) => {
       console.error(error);
+      this.messageService.showMessage(
+        'Some error occured, please try again',
+        'error'
+      );
     };
     reader.readAsArrayBuffer(file);
   }
@@ -43,7 +47,7 @@ export class ExcelUtilsService {
 
       // remove all dots and spaces from the sheet name
       const schedule_name = wsname.replace(/(\.\s*)/g, '_');
-      console.log(`schedule_name = ${schedule_name}`);
+      // console.log(`schedule_name = ${schedule_name}`);
 
       this.route_data[schedule_name] = this.processSheet(ws, wsname);
     }
@@ -95,9 +99,6 @@ export class ExcelUtilsService {
         header: depot_details_header,
       })[0];
 
-    console.log(depot_departure_details);
-    console.log(depot_arrival_details);
-
     return {
       depot_departure_details,
       depot_arrival_details,
@@ -136,8 +137,6 @@ export class ExcelUtilsService {
 
       route_data.push(ws_data);
     }
-
-    console.log(route_data.length);
 
     return route_data;
   }
