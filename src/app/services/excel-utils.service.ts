@@ -9,7 +9,7 @@ import { MessageService } from './message.service';
 export class ExcelUtilsService {
   constructor(private messageService: MessageService) {}
 
-  route_data: RouteData = {};
+  routeData: RouteData = {};
 
   readFile(file: File, progress: WritableSignal<number> = signal<number>(0)) {
     const reader = new FileReader();
@@ -46,71 +46,70 @@ export class ExcelUtilsService {
       this.processSheet(ws, wsname);
 
       // remove all dots and spaces from the sheet name
-      const schedule_name = wsname.replace(/(\.\s*)/g, '_');
-      // console.log(`schedule_name = ${schedule_name}`);
+      const scheduleName = wsname.replace(/(\.\s*)/g, '_');
+      // console.log(`scheduleName = ${scheduleName}`);
 
-      this.route_data[schedule_name] = this.processSheet(ws, wsname);
+      this.routeData[scheduleName] = this.processSheet(ws, wsname);
     }
 
-    console.log(this.route_data);
+    console.log(this.routeData);
   }
 
   processSheet(ws: WorkSheet, wsname: string): ScheduleData {
     const sheet_range = ws['!ref'];
-    const last_row = parseInt(
+    const lastRow = parseInt(
       (sheet_range as string).split(':')[1].split('').slice(1).join('')
     );
-    console.log(`last_row = ${last_row}`);
+    console.log(`lastRow = ${lastRow}`);
 
-    return {
-      ...this.extractDepotDetails(ws, wsname, last_row),
-      route_schedule: this.extractRouteDetails(ws, wsname, last_row - 2),
-    } as ScheduleData;
+    this.extractDepotDetails(ws, wsname, lastRow);
+    // this.extractRouteDetails(ws, wsname, lastRow);
+
+    // return {
+    //   ...this.extractDepotDetails(ws, wsname, lastRow),
+    //   route_schedule: this.extractRouteDetails(ws, wsname, lastRow - 2),
+    // } as ScheduleData;
+
+    return {} as ScheduleData;
   }
 
-  extractDepotDetails(
-    ws: WorkSheet,
-    wsname: string,
-    last_row: number
-  ): {
-    depot_departure_details: DepotDetails;
-    depot_arrival_details: DepotDetails;
-  } {
-    const depot_details_header = [
-      'depot_name',
-      'latitude',
-      'longitude',
-      'coordinate',
-      'arrival_time',
-      'departure_time',
-    ];
+  extractDepotDetails(ws: WorkSheet, wsname: string, lastRow: number): any {
+    let ranges = [`B5:J6`, `B${lastRow - 1}:J${lastRow}`];
+    let cleanedData = [];
 
-    const depot_departure_index = `B6:J6`;
-    const depot_arrival_index = `B${last_row}:J${last_row}`;
+    for (let range of ranges) {
+      let data = utils.sheet_to_json<any>(ws, {
+        range: range,
+        defval: '',
+      })[0];
 
-    const depot_departure_details: DepotDetails =
-      utils.sheet_to_json<DepotDetails>(ws, {
-        range: depot_departure_index,
-        header: depot_details_header,
-      })[0];
-    const depot_arrival_details: DepotDetails =
-      utils.sheet_to_json<DepotDetails>(ws, {
-        range: depot_arrival_index,
-        header: depot_details_header,
-      })[0];
+      let depoSchedule: { [x: string]: any } = {};
+
+      for (let key in data) {
+        const value = data[key];
+        if (value === '') {
+          continue;
+        }
+        const cleanedKey = key.trim().toLowerCase().replace(/\s/g, '_');
+        depoSchedule[cleanedKey] = value;
+      }
+      cleanedData.push(depoSchedule);
+    }
+
+    const [depotDepartureDetails, depotArrivalDetails] = cleanedData;
 
     return {
-      depot_departure_details,
-      depot_arrival_details,
+      depotDepartureDetails,
+      depotArrivalDetails,
     };
   }
 
   extractRouteDetails(
     ws: WorkSheet,
     wsname: string,
-    last_row: number
+    lastRow: number
   ): RouteSchedule[] {
-    const route_data: RouteSchedule[] = [];
+    const routeData: RouteSchedule[] = [];
 
     const route_schedule_header = [
       'round',
@@ -124,10 +123,11 @@ export class ExcelUtilsService {
       'departure_time',
     ];
 
-    for (let i = 8; i <= last_row; i++) {
+    for (let i = 8; i <= lastRow; i++) {
       const ws_data: RouteSchedule = utils.sheet_to_json<RouteSchedule>(ws, {
         range: `B${i}:J${i}`,
         header: route_schedule_header,
+        defval: '',
       })[0];
 
       if (ws_data.round === 'BREAK TIME') {
@@ -135,10 +135,10 @@ export class ExcelUtilsService {
         continue;
       }
 
-      route_data.push(ws_data);
+      routeData.push(ws_data);
     }
 
-    return route_data;
+    return routeData;
   }
 }
 
@@ -147,29 +147,29 @@ export interface RouteSchedule {
   round: string;
   num: number;
   direction: string;
-  bus_stop: string;
+  busStop: string;
   latitude: number | string;
   longitude: number | string;
   coordinate: string | number;
-  arrival_time: string | Date;
-  departure_time: string | Date;
+  arrivalTime: string | Date;
+  departureTime: string | Date;
 }
 
 export interface DepotDetails {
-  depot_name: string;
+  depotName: string;
   latitude: number | string;
   longitude: number | string;
   coordinate: string | number;
-  arrival_time: string | Date;
-  departure_time: string | Date;
+  arrivalTime: string | Date;
+  departureTime: string | Date;
 }
 
 export interface ScheduleData {
-  depot_departure_details: DepotDetails;
-  depot_arrival_details: DepotDetails;
-  route_schedule: RouteSchedule[];
+  depotDepartureDetails: DepotDetails;
+  depotArrivalDetails: DepotDetails;
+  routeSchedule: RouteSchedule[];
 }
 
 export interface RouteData {
-  [schedule_name: string]: ScheduleData;
+  [scheduleName: string]: ScheduleData;
 }
