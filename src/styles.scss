@@ -1,43 +1,51 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 html {
   color-scheme: light;
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: Roboto,
-    density: 0
-  ));
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: Roboto,
+      density: 0,
+    )
+  );
 }
 
-
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .success-snackbar {
-  @include mat.snack-bar-overrides((
-    container-color: rgb(71, 177, 71),
-    supporting-text-color: white,
-    button-color: lightgreen,
-  ));
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #f4fff2,
+      supporting-text-color: #054a29,
+      button-color: #137547,
+    )
+  );
 }
 
 .error-snackbar {
-  @include mat.snack-bar-overrides((
-    container-color: rgb(219, 73, 73),
-    supporting-text-color: white,
-    button-color: pink,
-  ));
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #f6f7eb,
+      supporting-text-color: #c20114,
+      button-color: #36382e,
+    )
+  );
 }
 
 .info-snackbar {
-  @include mat.snack-bar-overrides((
-    container-color: blue,
-    supporting-text-color: white,
-    button-color: lightblue,
-  ));
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #fff,
+      supporting-text-color: #031d44,
+      button-color: #031d44,
+    )
+  );
 }
-
-
-

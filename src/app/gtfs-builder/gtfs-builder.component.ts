@@ -26,7 +26,8 @@ export class GtfsBuilderComponent {
   ) {}
 
   onFileSelected(event: any) {
-    console.log(event.target.files);
+    const start = performance.now();
+    // console.log(event.target.files);
     const files = event.target.files;
     for (const file of files) {
       const name: string = file.name;
@@ -34,15 +35,17 @@ export class GtfsBuilderComponent {
       console.log(name, file.size);
       console.log(file.size);
       if (format === 'xlsx') {
-        console.log('Excel file');
+        // console.log('Excel file');
         this.excelUtilsService.readFile(file);
       } else {
-        console.log('Not an Excel file');
+        // console.log('Not an Excel file');
         this.messageService.showMessage(
           '⚠️ Please select an Excel file',
           'error'
         );
       }
     }
+    const end = performance.now();
+    console.log(`Time taken to process file: ${end - start}ms`);
   }
 }

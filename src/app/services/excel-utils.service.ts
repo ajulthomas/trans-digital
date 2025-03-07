@@ -1,6 +1,5 @@
 import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { read, utils, WorkSheet } from 'xlsx';
-import { Inject } from '@angular/core';
 import { MessageService } from './message.service';
 
 @Injectable({
@@ -36,23 +35,30 @@ export class ExcelUtilsService {
   }
 
   processFile(data: ArrayBuffer) {
-    const workbook = read(data, { type: 'array', cellDates: true });
-    const wsnames = workbook.SheetNames;
-    console.log(wsnames);
-    // const ws = workbook.Sheets[wsnames[0]];
+    try {
+      const workbook = read(data, { type: 'array', cellDates: true });
+      const wsnames = workbook.SheetNames;
+      // console.log(wsnames);
+      // const ws = workbook.Sheets[wsnames[0]];
 
-    for (const wsname of wsnames) {
-      const ws = workbook.Sheets[wsname];
-      this.processSheet(ws, wsname);
+      for (const wsname of wsnames) {
+        const ws = workbook.Sheets[wsname];
+        this.processSheet(ws, wsname);
 
-      // remove all dots and spaces from the sheet name
-      const scheduleName = wsname.replace(/(\.\s*)/g, '_');
-      // console.log(`scheduleName = ${scheduleName}`);
+        // remove all dots and spaces from the sheet name
+        const scheduleName = wsname.replace(/(\.\s*)/g, '_');
+        // console.log(`scheduleName = ${scheduleName}`);
 
-      this.routeData[scheduleName] = this.processSheet(ws, wsname);
+        this.routeData[scheduleName] = this.processSheet(ws, wsname);
+      }
+      console.log(this.routeData);
+    } catch (error) {
+      console.error(error);
+      this.messageService.showMessage(
+        'An error occured while processing the file. Please check the file and try again',
+        'error'
+      );
     }
-
-    console.log(this.routeData);
   }
 
   processSheet(ws: WorkSheet, wsname: string): ScheduleData {
@@ -60,20 +66,22 @@ export class ExcelUtilsService {
     const lastRow = parseInt(
       (sheet_range as string).split(':')[1].split('').slice(1).join('')
     );
-    console.log(`lastRow = ${lastRow}`);
+    // console.log(`lastRow = ${lastRow}`);
 
-    this.extractDepotDetails(ws, wsname, lastRow);
-    // this.extractRouteDetails(ws, wsname, lastRow);
-
-    // return {
-    //   ...this.extractDepotDetails(ws, wsname, lastRow),
-    //   route_schedule: this.extractRouteDetails(ws, wsname, lastRow - 2),
-    // } as ScheduleData;
-
-    return {} as ScheduleData;
+    return {
+      ...this.extractDepotDetails(ws, wsname, lastRow),
+      routeSchedule: this.extractRouteDetails(ws, wsname, lastRow - 2),
+    } as ScheduleData;
   }
 
-  extractDepotDetails(ws: WorkSheet, wsname: string, lastRow: number): any {
+  extractDepotDetails(
+    ws: WorkSheet,
+    wsname: string,
+    lastRow: number
+  ): {
+    depotDepartureDetails: DepotDetails;
+    depotArrivalDetails: DepotDetails;
+  } {
     let ranges = [`B5:J6`, `B${lastRow - 1}:J${lastRow}`];
     let cleanedData = [];
 
@@ -87,13 +95,13 @@ export class ExcelUtilsService {
 
       for (let key in data) {
         const value = data[key];
-        if (value === '') {
+        if (value === '' && key.startsWith('__EMPTY')) {
           continue;
         }
         const cleanedKey = key.trim().toLowerCase().replace(/\s/g, '_');
         depoSchedule[cleanedKey] = value;
       }
-      cleanedData.push(depoSchedule);
+      cleanedData.push(depoSchedule as DepotDetails);
     }
 
     const [depotDepartureDetails, depotArrivalDetails] = cleanedData;
@@ -123,23 +131,40 @@ export class ExcelUtilsService {
       'departure_time',
     ];
 
+    let currentRound: unknown;
+    let currentDirection: unknown;
+
     for (let i = 8; i <= lastRow; i++) {
-      const ws_data: RouteSchedule = utils.sheet_to_json<RouteSchedule>(ws, {
+      const wsData: RouteSchedule = utils.sheet_to_json<RouteSchedule>(ws, {
         range: `B${i}:J${i}`,
         header: route_schedule_header,
         defval: '',
       })[0];
 
-      if (ws_data.round === 'BREAK TIME') {
-        console.log(`Excluding BREAK_TIME at index ${i}`);
+      if (wsData.round === 'BREAK TIME') {
+        // console.log(`Excluding BREAK_TIME at index ${i}`);
         continue;
       }
 
-      routeData.push(ws_data);
+      wsData.round !== ''
+        ? (currentRound = wsData.round)
+        : (wsData.round = currentRound as string);
+
+      wsData.direction !== ''
+        ? (currentDirection = wsData.direction)
+        : (wsData.direction = currentDirection as string);
+
+      wsData.latitude = (wsData.latitude as string).trim();
+      wsData.longitude = (wsData.longitude as string).trim();
+      wsData.coordinate = (wsData.coordinate as string).trim();
+
+      routeData.push(wsData);
     }
 
     return routeData;
   }
+
+  // end of class
 }
 
 // create interface for the route schedule
@@ -151,17 +176,17 @@ export interface RouteSchedule {
   latitude: number | string;
   longitude: number | string;
   coordinate: string | number;
-  arrivalTime: string | Date;
-  departureTime: string | Date;
+  arrival: string | Date;
+  departure: string | Date;
 }
 
 export interface DepotDetails {
-  depotName: string;
+  depo: string;
   latitude: number | string;
   longitude: number | string;
   coordinate: string | number;
-  arrivalTime: string | Date;
-  departureTime: string | Date;
+  arrival: string | Date;
+  departure: string | Date;
 }
 
 export interface ScheduleData {

@@ -34,8 +34,9 @@ export class MessageService {
     }
 
     this.snachbarRef = this._snackBar.open(message, 'Close', {
-      duration: 5000,
+      duration: 10000,
       panelClass: [panelClass],
+      verticalPosition: 'top',
     });
   }
 }
