@@ -5,6 +5,7 @@ import { ExcelUtilsService } from '../services/excel-utils.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AgencyDetailsComponent } from '../agency-details/agency-details.component';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -19,10 +20,14 @@ import { AgencyDetailsComponent } from '../agency-details/agency-details.compone
   styleUrl: './gtfs-builder.component.scss',
 })
 export class GtfsBuilderComponent {
-  constructor(private excelUtilsService: ExcelUtilsService) {}
+  constructor(
+    private excelUtilsService: ExcelUtilsService,
+    private messageService: MessageService
+  ) {}
 
   onFileSelected(event: any) {
-    console.log(event.target.files);
+    const start = performance.now();
+    // console.log(event.target.files);
     const files = event.target.files;
     for (const file of files) {
       const name: string = file.name;
@@ -30,11 +35,17 @@ export class GtfsBuilderComponent {
       console.log(name, file.size);
       console.log(file.size);
       if (format === 'xlsx') {
-        console.log('Excel file');
+        // console.log('Excel file');
         this.excelUtilsService.readFile(file);
       } else {
-        console.log('Not an Excel file');
+        // console.log('Not an Excel file');
+        this.messageService.showMessage(
+          '⚠️ Please select an Excel file',
+          'error'
+        );
       }
     }
+    const end = performance.now();
+    console.log(`Time taken to process file: ${end - start}ms`);
   }
 }

@@ -1,28 +1,32 @@
 .gtfs-card {
-    width: 95%;
-    margin: 0 auto;
-    margin-top: 80px;
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 80px;
+  background-color: #e1e5f2;
+  padding: 10px;
 
+  .gtfs-title {
+    font-weight: semi-bold;
+  }
 
-    .gtfs-title {
-        font-weight: semi-bold;
-    }
+  .gtfs-subtitle {
+    color: #797878;
+  }
 
-    .gtfs-subtitle{
-        color: #797878;
-    }
+  .gtfs-buttons-container {
+    padding: 20px;
+  }
 
+  .gtfs-buttons {
+    margin-right: 30px;
+  }
 
-    .gtfs-buttons {
-        margin-right: 8px;
-    }
-    
-    .upload-button {
-        color: #ffffff;
-        background-color: #774ed6;
-    }
+  .upload-button {
+    color: #ffffff;
+    background-color: #774ed6;
+  }
 
-    .gtfs-data-upload-card {
-        margin-top: 20px;
-    }
+  .gtfs-data-upload-card {
+    margin-top: 20px;
+  }
 }
