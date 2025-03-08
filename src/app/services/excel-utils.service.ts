@@ -125,16 +125,17 @@ export class ExcelUtilsService {
   ): RouteSchedule[] {
     const routeData: RouteSchedule[] = [];
 
+    // get the keys from the interface
     const route_schedule_header = [
       'round',
       'num',
       'direction',
-      'bus_stop',
+      'busStop',
       'latitude',
       'longitude',
       'coordinate',
-      'arrival_time',
-      'departure_time',
+      'arrival',
+      'departure',
     ];
 
     let currentRound: unknown;
