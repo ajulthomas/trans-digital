@@ -10,7 +10,7 @@
                 <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
                 <button mat-raised-button (click)="fileInput.click()" class="gtfs-buttons upload-button">Upload bus
                     schedule</button>
-                <button mat-flat-button>Build GTFS and Download</button>
+                <button mat-flat-button (click)="downloadGTFS()">Build GTFS and Download</button>
             </div>
 
             <mat-tab-group>

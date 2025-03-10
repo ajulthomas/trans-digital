@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AgencyDetailsComponent } from '../agency-details/agency-details.component';
 import { MessageService } from '../services/message.service';
+import { GtfsService } from '../services/gtfs.service';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -22,7 +23,8 @@ import { MessageService } from '../services/message.service';
 export class GtfsBuilderComponent {
   constructor(
     private excelUtilsService: ExcelUtilsService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private gtfsService: GtfsService
   ) {}
 
   onFileSelected(event: any) {
@@ -47,5 +49,9 @@ export class GtfsBuilderComponent {
     }
     const end = performance.now();
     console.log(`Time taken to process file: ${end - start}ms`);
+  }
+
+  downloadGTFS() {
+    this.gtfsService.downloadGTFS();
   }
 }

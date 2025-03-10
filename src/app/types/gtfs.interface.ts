@@ -1,7 +1,7 @@
 /**
  * @reference https://gtfs.org/documentation/schedule/reference/#routestxt
  */
-export interface ServiceRouteDetails {
+export interface RouteDetails {
   route_id: string;
   agency_id: string;
   route_short_name: string;
@@ -56,12 +56,35 @@ export interface TripDetails {
 }
 
 export interface AgencyDetails {
-  agencyId: string;
-  agencyName: string;
-  agencyUrl: string;
-  agencyTimezone: string;
-  agencyLang?: string;
-  agencyPhone?: string;
-  agencyFareUrl?: string;
-  agencyEmail?: string;
+  agency_id: string;
+  agency_name: string;
+  agency_url: string;
+  agency_timezone: string;
+  agency_lang?: string;
+  agency_phone?: string;
+  agency_fare_url?: string;
+  agency_email?: string;
+}
+
+export interface CalendarDetails {
+  service_id: string;
+  monday: number;
+  tuesday: number;
+  wednesday: number;
+  thursday: number;
+  friday: number;
+  saturday: number;
+  sunday: number;
+  start_date: string;
+  end_date: string;
+}
+
+export interface GTFSData {
+  agency: AgencyDetails[];
+  calendar: CalendarDetails[];
+}
+
+export interface GTFSFiles {
+  agency: string;
+  calendar: string;
 }
