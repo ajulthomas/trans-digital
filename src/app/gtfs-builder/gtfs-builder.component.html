@@ -13,6 +13,13 @@
                 <button mat-flat-button (click)="downloadGTFS()">Build GTFS and Download</button>
             </div>
 
+            @if (performance) {
+            <div class="performance-metrics">
+                <p> Time taken to process file: <b>{{ performance }} ms</b> </p>
+            </div>
+            }
+
+
             <mat-tab-group>
                 <!-- <mat-tab label="Overview">
                     Data Overview comes in here
