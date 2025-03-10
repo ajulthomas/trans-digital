@@ -54,3 +54,14 @@ export interface TripDetails {
   wheelchair_accessible?: number;
   bikes_allowed?: number;
 }
+
+export interface AgencyDetails {
+  agencyId: string;
+  agencyName: string;
+  agencyUrl: string;
+  agencyTimezone: string;
+  agencyLang?: string;
+  agencyPhone?: string;
+  agencyFareUrl?: string;
+  agencyEmail?: string;
+}
