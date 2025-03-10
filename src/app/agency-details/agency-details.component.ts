@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
+import { AgencyDetails } from '../types/gtfs.interface';
+import { AGENCY_DATA } from '../services/gtfs.service';
 
 @Component({
   selector: 'agency-details',
@@ -10,23 +12,23 @@ import { MatTableModule } from '@angular/material/table';
 })
 export class AgencyDetailsComponent {
   displayedColumns: string[] = [
-    'agencyName',
-    'agencyUrl',
-    'agencyTimezone',
-    'agencyLang',
-    'agencyPhone',
-    'agencyFareUrl',
-    'agencyEmail',
+    'agency_name',
+    'agency_url',
+    'agency_timezone',
+    'agency_lang',
+    'agency_phone',
+    'agency_fare_url',
+    'agency_email',
   ];
 
   columnNames: { [fieldName: string]: string } = {
-    agencyName: 'Name',
-    agencyUrl: 'URL',
-    agencyTimezone: 'Timezone',
-    agencyLang: 'Language',
-    agencyPhone: 'Phone',
-    agencyFareUrl: 'Fare URL',
-    agencyEmail: 'Email',
+    agency_name: 'Name',
+    agency_url: 'URL',
+    agency_timezone: 'Timezone',
+    agency_lang: 'Language',
+    agency_phone: 'Phone',
+    agency_fare_url: 'Fare URL',
+    agency_email: 'Email',
   };
 
   dataSource: AgencyDetails[] = AGENCY_DATA;
@@ -36,27 +38,3 @@ export class AgencyDetailsComponent {
  * Interface for the agency details
  * @Reference: https://gtfs.org/documentation/schedule/reference/#agencytxt
  */
-export interface AgencyDetails {
-  agencyId: string;
-  agencyName: string;
-  agencyUrl: string;
-  agencyTimezone: string;
-  agencyLang?: string;
-  agencyPhone?: string;
-  agencyFareUrl?: string;
-  agencyEmail?: string;
-}
-
-const AGENCY_DATA: AgencyDetails[] = [
-  {
-    agencyId: 'BST',
-    agencyName: 'Batik Solo Trans',
-    agencyUrl:
-      'https://pariwisatasolo.surakarta.go.id/wp-content/uploads/2019/01/Transit-Map-Solo.pdf',
-    agencyTimezone: 'Asia/Jakarta',
-    agencyLang: 'en',
-    agencyPhone: '',
-    agencyFareUrl: 'https://pariwisatasolo.surakarta.go.id/',
-    agencyEmail: '',
-  },
-];
