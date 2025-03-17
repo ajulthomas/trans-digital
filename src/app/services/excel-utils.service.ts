@@ -15,6 +15,8 @@ export class ExcelUtilsService {
   constructor(private messageService: MessageService) {}
 
   routeData: RouteData = {};
+  routes: Set<string> = new Set();
+  stops: Set<string> = new Set();
 
   readFile(file: File, progress: WritableSignal<number> = signal<number>(0)) {
     const reader = new FileReader();
@@ -58,6 +60,7 @@ export class ExcelUtilsService {
         this.routeData[scheduleName] = this.processSheet(ws, wsname);
       }
       console.log(this.routeData);
+      console.log(this.routes);
     } catch (error) {
       console.error(error);
       this.messageService.showMessage(
@@ -165,10 +168,17 @@ export class ExcelUtilsService {
       wsData.longitude = (wsData.longitude as string).trim();
       wsData.coordinate = (wsData.coordinate as string).trim();
 
+      this.addRoute(wsData.direction);
       routeData.push(wsData);
     }
 
     return routeData;
+  }
+
+  addRoute(direction: string) {
+    const [pointA, pointB] = direction.split('-').map((point) => point.trim());
+    const normalisedRoute = [pointA, pointB].sort().join(' - ');
+    this.routes.add(normalisedRoute);
   }
 
   // end of class
