@@ -16,20 +16,23 @@ export class ExcelUtilsService {
 
   routeData: RouteData = {};
   routes: Set<string> = new Set();
-  stops: Set<string> = new Set();
+  stops: Map<string, BusStopData> = new Map();
 
-  readFile(file: File, progress: WritableSignal<number> = signal<number>(0)) {
+  readFile(file: File, time: WritableSignal<number> = signal<number>(0)) {
     const reader = new FileReader();
     reader.onload = () => {
-      progress.set(100);
+      // progress.set(100);
       this.messageService.showMessage('File read successfully 🚀');
       const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
+      const start = performance.now();
       this.processFile(data);
+      const end = performance.now();
+      time.set(end - start);
     };
     reader.onprogress = (event) => {
       if (event.lengthComputable) {
         const percent = Math.round((event.loaded / event.total) * 100);
-        progress.set(percent);
+        // progress.set(percent);
       }
     };
     reader.onerror = (error) => {
@@ -43,6 +46,7 @@ export class ExcelUtilsService {
   }
 
   processFile(data: ArrayBuffer) {
+    const start = performance.now();
     try {
       const workbook = read(data, { type: 'array', cellDates: true });
       const wsnames = workbook.SheetNames;
@@ -61,12 +65,16 @@ export class ExcelUtilsService {
       }
       console.log(this.routeData);
       console.log(this.routes);
+      console.log(this.stops);
     } catch (error) {
       console.error(error);
       this.messageService.showMessage(
         'An error occured while processing the file. Please check the file and try again',
         'error'
       );
+    } finally {
+      const end = performance.now();
+      console.log(`Time taken to process file: ${end - start}ms`);
     }
   }
 
@@ -169,6 +177,7 @@ export class ExcelUtilsService {
       wsData.coordinate = (wsData.coordinate as string).trim();
 
       this.addRoute(wsData.direction);
+      this.addStops(wsData);
       routeData.push(wsData);
     }
 
@@ -181,5 +190,21 @@ export class ExcelUtilsService {
     this.routes.add(normalisedRoute);
   }
 
+  addStops(wsData: RouteSchedule) {
+    const { busStop, latitude, longitude, coordinate } = wsData;
+    const key = busStop.trim().toLocaleLowerCase().split(' ').join('_');
+    if (this.stops.has(key)) {
+      return;
+    }
+    this.stops.set(key, { name: busStop, latitude, longitude, coordinate });
+  }
+
   // end of class
+}
+
+export interface BusStopData {
+  name: string;
+  latitude: string | number;
+  longitude: string | number;
+  coordinate: string | number;
 }

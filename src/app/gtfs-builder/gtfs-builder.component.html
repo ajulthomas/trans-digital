@@ -13,9 +13,9 @@
                 <button mat-flat-button (click)="downloadGTFS()">Build GTFS and Download</button>
             </div>
 
-            @if (performance) {
+            @if (performance()) {
             <div class="performance-metrics">
-                <p> Time taken to process file: <b>{{ performance }} ms</b> </p>
+                <p> Time taken to process file: <b>{{ performance().toFixed(2) }} ms</b> </p>
             </div>
             }
 
