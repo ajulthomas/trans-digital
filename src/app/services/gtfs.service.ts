@@ -143,14 +143,14 @@ export const AGENCY_DATA: AgencyDetails[] = [
 
 export const CALENDAR_DATA: CalendarDetails[] = [
   {
-    service_id: 'daily',
+    service_id: 'DAILY',
     monday: 1,
     tuesday: 1,
     wednesday: 1,
     thursday: 1,
     friday: 1,
     saturday: 1,
-    sunday: 1,
+    sunday: 0,
     start_date: '20250101',
     end_date: '20301231',
   },

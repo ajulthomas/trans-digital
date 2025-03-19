@@ -18,33 +18,6 @@ export class ExcelUtilsService {
   routes: Set<string> = new Set();
   stops: Map<string, BusStopData> = new Map();
 
-  readFile(file: File, time: WritableSignal<number> = signal<number>(0)) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      // progress.set(100);
-      this.messageService.showMessage('File read successfully 🚀');
-      const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
-      const start = performance.now();
-      this.processFile(data);
-      const end = performance.now();
-      time.set(end - start);
-    };
-    reader.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        // progress.set(percent);
-      }
-    };
-    reader.onerror = (error) => {
-      console.error(error);
-      this.messageService.showMessage(
-        'Some error occured, please try again',
-        'error'
-      );
-    };
-    reader.readAsArrayBuffer(file);
-  }
-
   processFile(data: ArrayBuffer) {
     const start = performance.now();
     try {

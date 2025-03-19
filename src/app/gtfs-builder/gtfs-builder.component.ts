@@ -7,6 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { AgencyDetailsComponent } from '../agency-details/agency-details.component';
 import { MessageService } from '../services/message.service';
 import { GtfsService } from '../services/gtfs.service';
+import { CalendarDetailsComponent } from '../calendar-details/calendar-details.component';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -16,6 +17,7 @@ import { GtfsService } from '../services/gtfs.service';
     MatCardModule,
     MatTabsModule,
     AgencyDetailsComponent,
+    CalendarDetailsComponent,
   ],
   templateUrl: './gtfs-builder.component.html',
   styleUrl: './gtfs-builder.component.scss',
@@ -40,7 +42,7 @@ export class GtfsBuilderComponent {
       console.log(file.size);
       if (format === 'xlsx') {
         // console.log('Excel file');
-        this.excelUtilsService.readFile(file, this.performance);
+        this.readFile(file, this.performance);
       } else {
         // console.log('Not an Excel file');
         this.messageService.showMessage(
@@ -54,5 +56,33 @@ export class GtfsBuilderComponent {
 
   downloadGTFS() {
     this.gtfsService.downloadGTFS();
+  }
+
+  readFile(file: File, time: WritableSignal<number> = signal<number>(0)) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // progress.set(100);
+      this.messageService.showMessage('File read successfully 🚀');
+      const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
+      const start = performance.now();
+      this.excelUtilsService.processFile(data);
+      this.gtfsService.extractGTFSInfo();
+      const end = performance.now();
+      time.set(end - start);
+    };
+    reader.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        // progress.set(percent);
+      }
+    };
+    reader.onerror = (error) => {
+      console.error(error);
+      this.messageService.showMessage(
+        'Some error occured, please try again',
+        'error'
+      );
+    };
+    reader.readAsArrayBuffer(file);
   }
 }
