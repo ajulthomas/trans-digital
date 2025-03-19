@@ -23,8 +23,8 @@ export interface StopDetails {
   stop_name: string;
   tts_stop_name?: string;
   stop_desc?: string;
-  stop_lat: number;
-  stop_lon: number;
+  stop_lat: number | string;
+  stop_lon: number | string;
   zone_id?: string;
   stop_url?: string;
   location_type?: number;
@@ -82,9 +82,13 @@ export interface CalendarDetails {
 export interface GTFSData {
   agency: AgencyDetails[];
   calendar: CalendarDetails[];
+  routes: RouteDetails[];
+  stops: StopDetails[];
 }
 
 export interface GTFSFiles {
   agency: string;
   calendar: string;
+  routes: string;
+  stops: string;
 }

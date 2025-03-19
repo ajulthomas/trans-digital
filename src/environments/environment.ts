@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  version: '0.2.0',
-  buildDate: '2025-03-2025',
+  version: '0.4.0',
+  buildDate: '19-02-2025 10:14:22 PM AEDT',
   buildEnv: 'production',
 };

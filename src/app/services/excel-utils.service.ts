@@ -15,32 +15,11 @@ export class ExcelUtilsService {
   constructor(private messageService: MessageService) {}
 
   routeData: RouteData = {};
-
-  readFile(file: File, progress: WritableSignal<number> = signal<number>(0)) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      progress.set(100);
-      this.messageService.showMessage('File read successfully 🚀');
-      const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
-      this.processFile(data);
-    };
-    reader.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        progress.set(percent);
-      }
-    };
-    reader.onerror = (error) => {
-      console.error(error);
-      this.messageService.showMessage(
-        'Some error occured, please try again',
-        'error'
-      );
-    };
-    reader.readAsArrayBuffer(file);
-  }
+  routes: Set<string> = new Set();
+  stops: Map<string, BusStopData> = new Map();
 
   processFile(data: ArrayBuffer) {
+    const start = performance.now();
     try {
       const workbook = read(data, { type: 'array', cellDates: true });
       const wsnames = workbook.SheetNames;
@@ -58,12 +37,17 @@ export class ExcelUtilsService {
         this.routeData[scheduleName] = this.processSheet(ws, wsname);
       }
       console.log(this.routeData);
+      console.log(this.routes);
+      console.log(this.stops);
     } catch (error) {
       console.error(error);
       this.messageService.showMessage(
         'An error occured while processing the file. Please check the file and try again',
         'error'
       );
+    } finally {
+      const end = performance.now();
+      console.log(`Time taken to process file: ${end - start}ms`);
     }
   }
 
@@ -165,11 +149,35 @@ export class ExcelUtilsService {
       wsData.longitude = (wsData.longitude as string).trim();
       wsData.coordinate = (wsData.coordinate as string).trim();
 
+      this.addRoute(wsData.direction);
+      this.addStops(wsData);
       routeData.push(wsData);
     }
 
     return routeData;
   }
 
+  addRoute(direction: string) {
+    const [pointA, pointB] = direction.split('-').map((point) => point.trim());
+    const normalisedRoute = [pointA, pointB].sort().join(' - ');
+    this.routes.add(normalisedRoute);
+  }
+
+  addStops(wsData: RouteSchedule) {
+    const { busStop, latitude, longitude, coordinate } = wsData;
+    const key = busStop.trim().toLocaleLowerCase().split(' ').join('_');
+    if (this.stops.has(key)) {
+      return;
+    }
+    this.stops.set(key, { name: busStop, latitude, longitude, coordinate });
+  }
+
   // end of class
+}
+
+export interface BusStopData {
+  name: string;
+  latitude: string | number;
+  longitude: string | number;
+  coordinate: string | number;
 }
