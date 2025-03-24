@@ -8,6 +8,7 @@ import { AgencyDetailsComponent } from '../agency-details/agency-details.compone
 import { MessageService } from '../services/message.service';
 import { GtfsService } from '../services/gtfs.service';
 import { CalendarDetailsComponent } from '../calendar-details/calendar-details.component';
+import { DataTableComponent } from '../data-table/data-table.component';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -18,6 +19,7 @@ import { CalendarDetailsComponent } from '../calendar-details/calendar-details.c
     MatTabsModule,
     AgencyDetailsComponent,
     CalendarDetailsComponent,
+    DataTableComponent,
   ],
   templateUrl: './gtfs-builder.component.html',
   styleUrl: './gtfs-builder.component.scss',

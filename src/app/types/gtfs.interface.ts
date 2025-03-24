@@ -84,6 +84,7 @@ export interface GTFSData {
   calendar: CalendarDetails[];
   routes: RouteDetails[];
   stops: StopDetails[];
+  trips: TripDetails[];
 }
 
 export interface GTFSFiles {
@@ -91,4 +92,5 @@ export interface GTFSFiles {
   calendar: string;
   routes: string;
   stops: string;
+  trips: string;
 }
