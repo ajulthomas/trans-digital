@@ -3,18 +3,22 @@ import { read, utils, WorkSheet } from 'xlsx';
 import { MessageService } from './message.service';
 import {
   DepotDetails,
-  RouteData,
+  BusScheduleData,
   RouteSchedule,
   ScheduleData,
 } from '../types/route-data.interface';
+import { GtfsUtilsService } from './gtfs-utils.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExcelUtilsService {
-  constructor(private messageService: MessageService) {}
+  constructor(
+    private messageService: MessageService,
+    private gtfsUtils: GtfsUtilsService
+  ) {}
 
-  routeData: RouteData = {};
+  busSchedule: BusScheduleData = {};
   routes: Set<string> = new Set();
   stops: Map<string, BusStopData> = new Map();
 
@@ -31,12 +35,12 @@ export class ExcelUtilsService {
         this.processSheet(ws, wsname);
 
         // remove all dots and spaces from the sheet name
-        const scheduleName = wsname.replace(/(\.\s*)/g, '_');
-        // console.log(`scheduleName = ${scheduleName}`);
+        const busName = wsname.replace(/(\.\s*)/g, '_');
+        // console.log(`busName = ${busName}`);
 
-        this.routeData[scheduleName] = this.processSheet(ws, wsname);
+        this.busSchedule[busName] = this.processSheet(ws, wsname);
       }
-      console.log(this.routeData);
+      console.log(this.busSchedule);
       console.log(this.routes);
       console.log(this.stops);
     } catch (error) {
@@ -138,29 +142,23 @@ export class ExcelUtilsService {
       }
 
       wsData.round !== ''
-        ? (currentRound = wsData.round)
+        ? (currentRound = wsData.round.trim())
         : (wsData.round = currentRound as string);
 
       wsData.direction !== ''
-        ? (currentDirection = wsData.direction)
+        ? (currentDirection = wsData.direction.trim())
         : (wsData.direction = currentDirection as string);
 
       wsData.latitude = (wsData.latitude as string).trim();
       wsData.longitude = (wsData.longitude as string).trim();
       wsData.coordinate = (wsData.coordinate as string).trim();
 
-      this.addRoute(wsData.direction);
+      this.routes.add(this.gtfsUtils.normaliseRouteName(wsData.direction));
       this.addStops(wsData);
       routeData.push(wsData);
     }
 
     return routeData;
-  }
-
-  addRoute(direction: string) {
-    const [pointA, pointB] = direction.split('-').map((point) => point.trim());
-    const normalisedRoute = [pointA, pointB].sort().join(' - ');
-    this.routes.add(normalisedRoute);
   }
 
   addStops(wsData: RouteSchedule) {

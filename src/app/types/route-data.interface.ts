@@ -26,6 +26,6 @@ export interface ScheduleData {
   routeSchedule: RouteSchedule[];
 }
 
-export interface RouteData {
-  [scheduleName: string]: ScheduleData;
+export interface BusScheduleData {
+  [busName: string]: ScheduleData;
 }

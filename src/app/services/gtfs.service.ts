@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RouteData } from '../types/route-data.interface';
+import { BusScheduleData, RouteSchedule } from '../types/route-data.interface';
 import {
   AgencyDetails,
   CalendarDetails,
@@ -7,22 +7,26 @@ import {
   GTFSFiles,
   RouteDetails,
   StopDetails,
+  TripDetails,
 } from '../types/gtfs.interface';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { ExcelUtilsService } from './excel-utils.service';
+import { GtfsUtilsService } from './gtfs-utils.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GtfsService {
-  constructor(private excelUtilsService: ExcelUtilsService) {}
+  constructor(
+    private excelUtilsService: ExcelUtilsService,
+    private gtfsUtils: GtfsUtilsService
+  ) {}
 
   gtfsData: GTFSData = {
     agency: AGENCY_DATA,
     calendar: CALENDAR_DATA,
     routes: [],
     stops: [],
+    trips: [],
   };
 
   gtfsFiles: GTFSFiles = {
@@ -30,7 +34,10 @@ export class GtfsService {
     calendar: '',
     routes: '',
     stops: '',
+    trips: '',
   };
+
+  routeDirectionCodes: Map<String, Map<string, number>> = new Map();
 
   // serviceRoutes: RouteDetails[] = [];
   stops: StopDetails[] = [];
@@ -38,6 +45,7 @@ export class GtfsService {
   extractGTFSInfo() {
     this.extractRoutes();
     this.extractStops();
+    this.extractTrips(this.excelUtilsService.busSchedule);
   }
 
   extractRoutes() {
@@ -46,7 +54,7 @@ export class GtfsService {
     for (const route of routes) {
       i += 1;
       const routeID: string = `BST${i.toString().padStart(2, '0')}`;
-      const routeShortName: string = this.getRouteShortName(route);
+      const routeShortName: string = this.gtfsUtils.createRouteShortName(route);
       const routeDetails: RouteDetails = {
         route_id: routeID,
         agency_id: 'BST',
@@ -58,22 +66,6 @@ export class GtfsService {
       };
       this.gtfsData.routes.push(routeDetails);
     }
-  }
-
-  getRouteShortName(route: string): string {
-    const [start, end] = route.split('-');
-
-    // the first character of the space separated words
-    const startShort = start
-      .split(' ')
-      .map((word) => word[0])
-      .join('');
-    const endShort = end
-      .split(' ')
-      .map((word) => word[0])
-      .join('');
-
-    return `${startShort}-${endShort}`;
   }
 
   extractStops() {
@@ -99,32 +91,69 @@ export class GtfsService {
     }
   }
 
-  downloadGTFS() {
-    this.extractGTFSInfo();
-    const zip = new JSZip();
-    // covert the objects to GTFS files
-    for (const [filename, data] of Object.entries(this.gtfsData)) {
-      const fileContent = this.createFiles(data);
-      zip.file(`${filename}.txt`, fileContent);
-    }
-    // zip and download the files
-    zip.generateAsync({ type: 'blob' }).then((content) => {
-      // saveAs from FileSaver will download the zip
-      saveAs(content, 'gtfs_schedule.zip');
-    });
-  }
+  extractTrips(busSchedule: BusScheduleData) {
+    let trips: Map<string, TripDetails> = new Map();
 
-  createFiles(data: any[]): string {
-    let fileContent = '';
-    if (data.length > 0) {
-      const keys = Object.keys(data[0]);
-      fileContent += keys.join(',') + '\n';
-      for (const item of data) {
-        const values = Object.values(item);
-        fileContent += values.join(',') + '\n';
+    for (const [busName, scheduleData] of Object.entries(busSchedule)) {
+      const routeSchedule = scheduleData.routeSchedule;
+
+      for (const item of routeSchedule) {
+        const normalisedRoute = this.gtfsUtils.normaliseRouteName(
+          item.direction
+        );
+        const routeID = this.gtfsData?.routes?.find(
+          (route) => route?.route_long_name === normalisedRoute
+        )?.route_id;
+        if (routeID) {
+          const directionCode =
+            this.getDirectionCode(routeID, item.direction) ?? 0;
+          const tripID = this.gtfsUtils.createTripID(
+            busName,
+            routeID,
+            item.round,
+            directionCode
+          );
+          if (!trips.has(tripID)) {
+            const tripDetails: TripDetails = {
+              route_id: routeID,
+              service_id: 'daily',
+              trip_id: tripID,
+              trip_headsign: item.direction,
+              trip_short_name: '',
+              direction_id: directionCode,
+              block_id: busName,
+              shape_id: '',
+              wheelchair_accessible: 0,
+              bikes_allowed: 0,
+            };
+            trips.set(tripID, tripDetails);
+            this.gtfsData.trips.push(tripDetails);
+          }
+        }
       }
     }
-    return fileContent;
+    console.log(trips.size);
+    console.log(this.gtfsData.trips.length);
+  }
+
+  getDirectionCode(routeID: string, direction: string): number | undefined {
+    if (!this.routeDirectionCodes.has(routeID)) {
+      this.routeDirectionCodes.set(routeID, new Map().set(direction, 0));
+      return 0;
+    }
+    if (
+      this.routeDirectionCodes.has(routeID) &&
+      this.routeDirectionCodes.get(routeID)?.has(direction)
+    ) {
+      return this.routeDirectionCodes.get(routeID)?.get(direction);
+    }
+    const code = this.routeDirectionCodes.get(routeID)?.size ?? 0;
+    this.routeDirectionCodes.get(routeID)?.set(direction, code);
+    return code;
+  }
+
+  downloadGTFS() {
+    this.gtfsUtils.saveAsZip(this.gtfsData);
   }
 }
 
@@ -143,7 +172,7 @@ export const AGENCY_DATA: AgencyDetails[] = [
 
 export const CALENDAR_DATA: CalendarDetails[] = [
   {
-    service_id: 'DAILY',
+    service_id: 'daily',
     monday: 1,
     tuesday: 1,
     wednesday: 1,
