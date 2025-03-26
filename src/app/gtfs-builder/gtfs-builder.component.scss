@@ -1,9 +1,14 @@
 .gtfs-card {
   width: 95%;
   margin: 0 auto;
-  margin-top: 80px;
+  // margin-top: 80px;
   background-color: #e1e5f2;
   padding: 10px;
+
+  .card-header {
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
 
   .gtfs-title {
     font-weight: semi-bold;
@@ -14,7 +19,7 @@
   }
 
   .gtfs-buttons-container {
-    padding: 20px;
+    // padding: 20px;
   }
 
   .gtfs-buttons {
