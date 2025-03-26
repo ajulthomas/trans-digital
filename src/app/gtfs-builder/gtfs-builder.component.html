@@ -1,17 +1,21 @@
 <div class="gtfs-container">
 
     <mat-card class="gtfs-card">
-        <mat-card-header>
+        <mat-card-header class="card-header">
+
             <mat-card-title class="gtfs-title"> GTFS Builder</mat-card-title>
             <mat-card-subtitle class="gtfs-subtitle">Convert your bus schedules to GTFS format</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
+
             <div class="gtfs-buttons-container">
                 <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
                 <button mat-raised-button (click)="fileInput.click()" class="gtfs-buttons upload-button">Upload bus
                     schedule</button>
                 <button mat-flat-button (click)="downloadGTFS()">Build GTFS and Download</button>
             </div>
+
+        </mat-card-header>
+        <mat-card-content>
+
 
             @if (performance()) {
             <div class="performance-metrics">

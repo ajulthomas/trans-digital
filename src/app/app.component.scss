@@ -3,3 +3,36 @@
   color: #fd0303;
   font-weight: bold;
 }
+
+.branding-container {
+  padding: 10px;
+  text-align: center;
+  background-color: #f3f3f3;
+  margin-bottom: 20px;
+  .app-logo {
+    width: 140px;
+    height: 80px;
+    display: inline-block;
+  }
+
+  .text-container {
+    display: inline-block;
+    position: relative;
+    // top: -30px;
+    .company-name {
+      font-size: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+      color: #8c3d1e;
+      padding-bottom: 5px;
+    }
+    .tagline {
+      font-size: 1.2rem;
+      color: #747474;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+    }
+    margin-right: 15px;
+  }
+}
