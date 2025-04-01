@@ -79,12 +79,53 @@ export interface CalendarDetails {
   end_date: string;
 }
 
+/**
+ * @reference https://gtfs.org/documentation/schedule/reference/#calendar_dates_txt
+ */
+export interface CalendarDatesDetails {
+  service_id: string;
+  date: string; // YYYYMMDD
+  exception_type: number; // 1 for added, 2 for removed
+}
+
+/**
+ * @reference https://gtfs.org/documentation/schedule/reference/#shapestxt
+ */
+export interface ShapeDetails {
+  shape_id: string;
+  shape_pt_lat: number;
+  shape_pt_lon: number;
+  shape_pt_sequence: number;
+  shape_dist_traveled: number;
+}
+
+/**
+ * @reference https://gtfs.org/documentation/schedule/reference/#stop_timestxt
+ */
+export interface StopTimeDetails {
+  trip_id: string;
+  arrival_time: string; // HH:MM:SS
+  departure_time: string; // HH:MM:SS
+  stop_id: string;
+  stop_sequence: number;
+  stop_headsign?: string;
+  // pickup_type?: number; // 0 = regular scheduled pickup
+  // drop_off_type?: number; // 0 = regularly scheduled drop off
+  // continous_pickup?: number; // 1 = no continuous pickup
+  // continous_drop_off?: number; // 1 = no continuous drop off
+  // shape_dist_traveled?: number; // optional, in meters
+  timepoint?: number; // 1 - exact time, 0 - approximate time
+}
+
 export interface GTFSData {
   agency: AgencyDetails[];
   calendar: CalendarDetails[];
+  calendar_dates: CalendarDatesDetails[];
   routes: RouteDetails[];
   stops: StopDetails[];
   trips: TripDetails[];
+  stop_times: StopTimeDetails[];
+  shapes: ShapeDetails[];
 }
 
 export interface GTFSFiles {

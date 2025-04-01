@@ -7,6 +7,7 @@ import {
   GTFSFiles,
   RouteDetails,
   StopDetails,
+  StopTimeDetails,
   TripDetails,
 } from '../types/gtfs.interface';
 import { ExcelUtilsService } from './excel-utils.service';
@@ -27,6 +28,9 @@ export class GtfsService {
     routes: [],
     stops: [],
     trips: [],
+    stop_times: [],
+    calendar_dates: [],
+    shapes: [],
   };
 
   gtfsFiles: GTFSFiles = {
@@ -39,8 +43,9 @@ export class GtfsService {
 
   routeDirectionCodes: Map<String, Map<string, number>> = new Map();
 
-  // serviceRoutes: RouteDetails[] = [];
   stops: StopDetails[] = [];
+
+  trip_shapes: Map<string, string> = new Map();
 
   extractGTFSInfo() {
     this.extractRoutes();
@@ -129,11 +134,53 @@ export class GtfsService {
             trips.set(tripID, tripDetails);
             this.gtfsData.trips.push(tripDetails);
           }
+          // code to extract stops times
+          this.extractStopTime(tripID, item);
+
+          // code to extract shapes
         }
       }
     }
     console.log(trips.size);
     console.log(this.gtfsData.trips.length);
+  }
+
+  extractStopTime(tripID: string, routeObj: RouteSchedule) {
+    const stopCode = this.gtfsUtils.generateStopCode(routeObj.busStop);
+    const stopID = this.gtfsData.stops.find(
+      (stop) => stop.stop_code === stopCode
+    )?.stop_id;
+
+    if (!stopID) {
+      console.error(`Stop ID not found for stop code: ${stopCode}`);
+    }
+
+    try {
+      const arrivalTime = routeObj.arrival
+        ? this.gtfsUtils.parseTime(routeObj.arrival)
+        : this.gtfsUtils.parseTime(routeObj.departure);
+      const departureTime = routeObj.departure
+        ? this.gtfsUtils.parseTime(routeObj.departure as Date)
+        : '';
+      const stopTimeDetails: StopTimeDetails = {
+        trip_id: tripID,
+        arrival_time: arrivalTime,
+        departure_time: departureTime,
+        stop_id: stopID ?? '',
+        stop_sequence: routeObj.num,
+        stop_headsign: '',
+        timepoint: 1,
+      };
+      this.gtfsData.stop_times.push(stopTimeDetails);
+    } catch (error) {
+      console.error('Error parsing time:', error, routeObj);
+      console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
+      console.log(
+        (routeObj.departure as string).length,
+        typeof routeObj.departure
+      );
+      return;
+    }
   }
 
   getDirectionCode(routeID: string, direction: string): number | undefined {

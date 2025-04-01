@@ -1,4 +1,9 @@
 // create interface for the route schedule
+
+/**
+ * Donot change the RouteSchedule, unless the excel sheet changes
+ */
+
 export interface RouteSchedule {
   round: string;
   num: number;
