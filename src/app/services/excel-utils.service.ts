@@ -153,6 +153,16 @@ export class ExcelUtilsService {
       wsData.longitude = (wsData.longitude as string).trim();
       wsData.coordinate = (wsData.coordinate as string).trim();
 
+      if (typeof wsData.arrival === 'string') {
+        wsData.arrival = wsData.arrival.trim();
+        // console.error('Invalid arrival time string provided:', wsData);
+      }
+
+      if (typeof wsData.departure === 'string') {
+        wsData.departure = wsData.departure.trim();
+        // console.error('Invalid departure time string provided:', wsData);
+      }
+
       this.routes.add(this.gtfsUtils.normaliseRouteName(wsData.direction));
       this.addStops(wsData);
       routeData.push(wsData);
@@ -162,12 +172,13 @@ export class ExcelUtilsService {
   }
 
   addStops(wsData: RouteSchedule) {
-    const { busStop, latitude, longitude, coordinate } = wsData;
-    const key = busStop.trim().toLocaleLowerCase().split(' ').join('_');
+    const { busStop, coordinate } = wsData;
+    const [latitude, longitude] = (coordinate as string).trim().split(',');
+    const key = this.gtfsUtils.generateStopCode(busStop);
     if (this.stops.has(key)) {
       return;
     }
-    this.stops.set(key, { name: busStop, latitude, longitude, coordinate });
+    this.stops.set(key, { name: busStop, latitude, longitude });
   }
 
   // end of class
@@ -175,7 +186,6 @@ export class ExcelUtilsService {
 
 export interface BusStopData {
   name: string;
-  latitude: string | number;
-  longitude: string | number;
-  coordinate: string | number;
+  latitude: string;
+  longitude: string;
 }

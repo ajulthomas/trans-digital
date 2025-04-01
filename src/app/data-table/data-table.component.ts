@@ -38,6 +38,8 @@ export class DataTableComponent {
         return this.gtfsService.gtfsData.stops;
       case 'trips':
         return this.gtfsService.gtfsData.trips;
+      case 'stop_times':
+        return this.gtfsService.gtfsData.stop_times;
       default:
         return [];
     }
@@ -82,6 +84,18 @@ const DISPLAYED_COLS: { [key: string]: string[] } = {
     'wheelchair_accessible',
     'bikes_allowed',
   ],
+  stop_times: [
+    'trip_id',
+    'stop_sequence',
+    'stop_id',
+    'arrival_time',
+    'departure_time',
+    // 'stop_headsign',
+    // 'pickup_type',
+    // 'drop_off_type',
+    // 'shape_dist_traveled',
+    // 'timepoint',
+  ],
 };
 
 const COLUMN_NAMES: { [key: string]: { [fieldName: string]: string } } = {
@@ -121,5 +135,17 @@ const COLUMN_NAMES: { [key: string]: { [fieldName: string]: string } } = {
     shape_id: 'Shape ID',
     wheelchair_accessible: 'Wheelchair Accessible',
     bikes_allowed: 'Bikes Allowed',
+  },
+  stop_times: {
+    trip_id: 'Trip ID',
+    stop_sequence: 'Sequence',
+    stop_id: 'Stop ID',
+    arrival_time: 'Arrival Time',
+    departure_time: 'Departure Time',
+    // stop_headsign: 'Headsign',
+    // pickup_type: 'Pickup Type',
+    // drop_off_type: 'Drop Off Type',
+    // shape_dist_traveled: 'Distance Traveled',
+    // timepoint: 'Time Point',
   },
 };

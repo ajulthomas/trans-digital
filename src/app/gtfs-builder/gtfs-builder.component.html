@@ -55,7 +55,13 @@
                     <p> Upload a file to view data </p>
                     }
                 </mat-tab>
-                <mat-tab label="Stop Times"> Stop Times details comes in here </mat-tab>
+                <mat-tab label="Stop Times">
+                    @if (performance()) {
+                    <data-table datatype="stop_times"></data-table>
+                    } @else {
+                    <p> Upload a file to view data </p>
+                    }
+                </mat-tab>
             </mat-tab-group>
 
         </mat-card-content>

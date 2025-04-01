@@ -37,7 +37,30 @@ export class GtfsUtilsService {
     round: string,
     directionCode: number
   ): string {
+    // future notes:
+    // add padding to the round number, if the no. of rounds per day is more than 9
     return `${busName}_${routeID}_R${round.at(-1)}_${directionCode}`;
+  }
+
+  generateStopCode(stopName: string): string {
+    return stopName.trim().toLocaleLowerCase().split(' ').join('_');
+  }
+
+  parseTime(dateTime: Date | string): string {
+    // if the dateTime is a string, convert it to Date object
+    if (typeof dateTime === 'string' && dateTime.length > 2) {
+      // create a new date object with time as dateTime, it could be in just HH or HH:MM format or HH:MM:SS format
+      const [hours, minutes, seconds] = dateTime.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes || 0, seconds || 0); // set seconds to 0 if not provided
+
+      dateTime = date;
+    }
+
+    const hours = (dateTime as Date).getHours().toString().padStart(2, '0');
+    const minutes = (dateTime as Date).getMinutes().toString().padStart(2, '0');
+    const seconds = (dateTime as Date).getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   }
 
   createFiles(data: any[]): string {
