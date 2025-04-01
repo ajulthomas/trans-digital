@@ -275,6 +275,10 @@ export class GtfsService {
     return code;
   }
 
+  getShapeDetails(shapeID: string): ShapeDetails[] {
+    return this.gtfsData.shapes.filter((shape) => shape.shape_id === shapeID);
+  }
+
   downloadGTFS() {
     this.gtfsUtils.saveAsZip(this.gtfsData);
   }

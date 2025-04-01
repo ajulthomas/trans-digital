@@ -1,1 +1,9 @@
-<p>route-map works!</p>
+<div class="map-container">
+    <google-map height="750px" width="100%" [options]="options">
+        <map-transit-layer />
+        <map-polyline [options]="polylineOptions" />
+        @for (point of selectedShapeMarkers; track point) {
+        <map-marker [position]="point.position" [label]="point.label" [options]="markerOptions" />
+        }
+    </google-map>>
+</div>
