@@ -62,6 +62,13 @@
                     <p> Upload a file to view data </p>
                     }
                 </mat-tab>
+                <mat-tab label="Shapes">
+                    @if (performance()) {
+                    <data-table datatype="shapes"></data-table>
+                    } @else {
+                    <p> Upload a file to view data </p>
+                    }
+                </mat-tab>
             </mat-tab-group>
 
         </mat-card-content>

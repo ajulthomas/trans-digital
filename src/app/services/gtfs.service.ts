@@ -48,13 +48,15 @@ export class GtfsService {
 
   trip_shapes: Map<string, string[]> = new Map();
   shape_trip_map: Map<string, string[]> = new Map();
-  shape_ID_trip_ID_map: Map<string, string[]> = new Map();
+  // shape_ID_trip_ID_map: Map<string, string[]> = new Map();
+  trip_ID_shape_ID_map: Map<string, string> = new Map();
 
   extractGTFSInfo() {
     this.extractRoutes();
     this.extractStops();
     this.extractTrips(this.excelUtilsService.busSchedule);
     this.extractShapes();
+    this.updateTrips();
   }
 
   extractRoutes() {
@@ -205,17 +207,19 @@ export class GtfsService {
   }
 
   extractShapes() {
-    console.log(this.trip_shapes.size);
-    console.log(this.trip_shapes);
+    // console.log(this.trip_shapes.size);
+    // console.log(this.trip_shapes);
     this.createShapeMap(this.trip_shapes);
-    console.log(this.shape_trip_map.size);
-    console.log(this.shape_trip_map);
+    // console.log(this.shape_trip_map.size);
+    // console.log(this.shape_trip_map);
     let ID = 0;
     for (const [shapeString, tripIDs] of this.shape_trip_map.entries()) {
       // create shape entry
       const shapeID = `SHP${ID.toString().padStart(2, '0')}`;
-      ID += 1;
-      this.shape_ID_trip_ID_map.set(shapeID, tripIDs);
+      // this.shape_ID_trip_ID_map.set(shapeID, tripIDs);
+      tripIDs.forEach((tripID) => {
+        this.trip_ID_shape_ID_map.set(tripID, shapeID);
+      });
       shapeString.split('|').map((point) => {
         const [stopSequence, lat, lon] = point.split('_');
         const shapeDetail: ShapeDetails = {
@@ -227,7 +231,11 @@ export class GtfsService {
         };
         this.gtfsData.shapes.push(shapeDetail);
       });
+      ID += 1;
     }
+    console.log('Printing shape GTFS data');
+    console.log(this.gtfsData.shapes.length);
+    console.log(this.gtfsData.shapes);
   }
 
   createShapeMap(tripShape: Map<string, string[]>) {
@@ -239,6 +247,15 @@ export class GtfsService {
       const tripIDs = this.shape_trip_map.get(shape_string);
       tripIDs?.push(tripID);
       this.shape_trip_map.set(shape_string, tripIDs ?? []);
+    }
+  }
+
+  updateTrips() {
+    for (const trip of this.gtfsData.trips) {
+      const shapeID = this.trip_ID_shape_ID_map.get(trip.trip_id);
+      if (shapeID) {
+        trip.shape_id = shapeID;
+      }
     }
   }
 

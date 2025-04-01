@@ -40,6 +40,8 @@ export class DataTableComponent {
         return this.gtfsService.gtfsData.trips;
       case 'stop_times':
         return this.gtfsService.gtfsData.stop_times;
+      case 'shapes':
+        return this.gtfsService.gtfsData.shapes;
       default:
         return [];
     }
@@ -80,7 +82,7 @@ const DISPLAYED_COLS: { [key: string]: string[] } = {
     // 'trip_short_name',
     'direction_id',
     'block_id',
-    // 'shape_id',
+    'shape_id',
     'wheelchair_accessible',
     'bikes_allowed',
   ],
@@ -95,6 +97,13 @@ const DISPLAYED_COLS: { [key: string]: string[] } = {
     // 'drop_off_type',
     // 'shape_dist_traveled',
     // 'timepoint',
+  ],
+  shapes: [
+    'shape_id',
+    'shape_pt_sequence',
+    'shape_pt_lat',
+    'shape_pt_lon',
+    // 'shape_dist_traveled',
   ],
 };
 
@@ -147,5 +156,12 @@ const COLUMN_NAMES: { [key: string]: { [fieldName: string]: string } } = {
     // drop_off_type: 'Drop Off Type',
     // shape_dist_traveled: 'Distance Traveled',
     // timepoint: 'Time Point',
+  },
+  shapes: {
+    shape_id: 'ID',
+    shape_pt_sequence: 'Sequence',
+    shape_pt_lat: 'Latitude',
+    shape_pt_lon: 'Longitude',
+    // shape_dist_traveled: 'Distance Traveled',
   },
 };
