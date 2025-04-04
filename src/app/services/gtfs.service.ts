@@ -6,6 +6,7 @@ import {
   GTFSData,
   GTFSFiles,
   RouteDetails,
+  ShapeDetails,
   StopDetails,
   StopTimeDetails,
   TripDetails,
@@ -45,12 +46,17 @@ export class GtfsService {
 
   stops: StopDetails[] = [];
 
-  trip_shapes: Map<string, string> = new Map();
+  trip_shapes: Map<string, string[]> = new Map();
+  shape_trip_map: Map<string, string[]> = new Map();
+  // shape_ID_trip_ID_map: Map<string, string[]> = new Map();
+  trip_ID_shape_ID_map: Map<string, string> = new Map();
 
   extractGTFSInfo() {
     this.extractRoutes();
     this.extractStops();
     this.extractTrips(this.excelUtilsService.busSchedule);
+    this.extractShapes();
+    this.updateTrips();
   }
 
   extractRoutes() {
@@ -67,7 +73,7 @@ export class GtfsService {
         route_long_name: route,
         route_type: 3,
         route_color: ROUTE_COLOURS[i - 1],
-        route_text_color: '#FFFFFF',
+        route_text_color: 'FFFFFF',
       };
       this.gtfsData.routes.push(routeDetails);
     }
@@ -138,6 +144,7 @@ export class GtfsService {
           this.extractStopTime(tripID, item);
 
           // code to extract shapes
+          this.createShapeString(tripID, item);
         }
       }
     }
@@ -180,6 +187,75 @@ export class GtfsService {
         typeof routeObj.departure
       );
       return;
+    }
+  }
+
+  createShapeString(tripID: string, routeObj: RouteSchedule) {
+    // create shape string with lat, lon, and stop sequence
+    const coordinates = (routeObj.coordinate as string).trim().split(',');
+    const lat = parseFloat(coordinates[0]);
+    const lon = parseFloat(coordinates[1]);
+    const shape_string = `${routeObj.num}_${lat}_${lon}`;
+
+    if (!this.trip_shapes.has(tripID)) {
+      this.trip_shapes.set(tripID, []);
+    }
+
+    const shapeArray = this.trip_shapes.get(tripID);
+    shapeArray?.push(shape_string);
+    this.trip_shapes.set(tripID, shapeArray ?? []);
+  }
+
+  extractShapes() {
+    // console.log(this.trip_shapes.size);
+    // console.log(this.trip_shapes);
+    this.createShapeMap(this.trip_shapes);
+    // console.log(this.shape_trip_map.size);
+    // console.log(this.shape_trip_map);
+    let ID = 0;
+    for (const [shapeString, tripIDs] of this.shape_trip_map.entries()) {
+      // create shape entry
+      const shapeID = `SHP${ID.toString().padStart(2, '0')}`;
+      // this.shape_ID_trip_ID_map.set(shapeID, tripIDs);
+      tripIDs.forEach((tripID) => {
+        this.trip_ID_shape_ID_map.set(tripID, shapeID);
+      });
+      shapeString.split('|').map((point) => {
+        const [stopSequence, lat, lon] = point.split('_');
+        const shapeDetail: ShapeDetails = {
+          shape_id: shapeID,
+          shape_pt_lat: parseFloat(lat),
+          shape_pt_lon: parseFloat(lon),
+          shape_pt_sequence: parseInt(stopSequence, 10),
+          shape_dist_traveled: 0,
+        };
+        this.gtfsData.shapes.push(shapeDetail);
+      });
+      ID += 1;
+    }
+    console.log('Printing shape GTFS data');
+    console.log(this.gtfsData.shapes.length);
+    console.log(this.gtfsData.shapes);
+  }
+
+  createShapeMap(tripShape: Map<string, string[]>) {
+    for (const [tripID, shapeArray] of tripShape.entries()) {
+      const shape_string = shapeArray.join('|');
+      if (!this.shape_trip_map.has(shape_string)) {
+        this.shape_trip_map.set(shape_string, []);
+      }
+      const tripIDs = this.shape_trip_map.get(shape_string);
+      tripIDs?.push(tripID);
+      this.shape_trip_map.set(shape_string, tripIDs ?? []);
+    }
+  }
+
+  updateTrips() {
+    for (const trip of this.gtfsData.trips) {
+      const shapeID = this.trip_ID_shape_ID_map.get(trip.trip_id);
+      if (shapeID) {
+        trip.shape_id = shapeID;
+      }
     }
   }
 
@@ -233,10 +309,10 @@ export const CALENDAR_DATA: CalendarDetails[] = [
 ];
 
 export const ROUTE_COLOURS: string[] = [
-  '#FF0000',
-  '#FFA500',
-  '#FFFF00',
-  '#008000',
-  '#0000FF',
-  '#4B0082',
+  'FF0000',
+  'FFA500',
+  'FFFF00',
+  '008000',
+  '0000FF',
+  '4B0082',
 ];

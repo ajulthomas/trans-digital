@@ -17,3 +17,20 @@
   height: 50px;
   margin-right: 10px;
 }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.nav-item {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 10px 15px;
+  font-size: 0.8em;
+}
+
+.active {
+  color: #f7f9fa;
+  border-radius: 5px;
+  background-color: #044caa;
+}
