@@ -73,7 +73,7 @@ export class GtfsService {
         route_long_name: route,
         route_type: 3,
         route_color: ROUTE_COLOURS[i - 1],
-        route_text_color: '#FFFFFF',
+        route_text_color: 'FFFFFF',
       };
       this.gtfsData.routes.push(routeDetails);
     }
@@ -309,10 +309,10 @@ export const CALENDAR_DATA: CalendarDetails[] = [
 ];
 
 export const ROUTE_COLOURS: string[] = [
-  '#FF0000',
-  '#FFA500',
-  '#FFFF00',
-  '#008000',
-  '#0000FF',
-  '#4B0082',
+  'FF0000',
+  'FFA500',
+  'FFFF00',
+  '008000',
+  '0000FF',
+  '4B0082',
 ];
