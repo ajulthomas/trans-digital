@@ -52,6 +52,15 @@ export class GtfsService {
   // shape_ID_trip_ID_map: Map<string, string[]> = new Map();
   trip_ID_shape_ID_map: Map<string, string> = new Map();
 
+  validateGTFSData() {
+    return (
+      this.gtfsData.routes.length > 0 &&
+      this.gtfsData.stops.length > 0 &&
+      this.gtfsData.trips.length > 0 &&
+      this.gtfsData.stop_times.length > 0
+    );
+  }
+
   extractGTFSInfo() {
     this.extractRoutes();
     this.extractStops();

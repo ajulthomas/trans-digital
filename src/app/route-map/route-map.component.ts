@@ -8,10 +8,24 @@ import {
 } from '@angular/google-maps';
 import { ShapeDetails } from '../types/gtfs.interface';
 import { GtfsService } from '../services/gtfs.service';
+import { MatCardModule } from '@angular/material/card';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-route-map',
-  imports: [GoogleMap, MapTransitLayer, MapPolyline, MapMarker],
+  imports: [
+    GoogleMap,
+    MapTransitLayer,
+    MapPolyline,
+    MapMarker,
+    MatCardModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+  ],
   templateUrl: './route-map.component.html',
   styleUrl: './route-map.component.scss',
 })
@@ -23,17 +37,22 @@ export class RouteMapComponent {
     strokeWeight: 5,
     path: this.vertices,
   };
-  selectedShape: string = 'SHP01';
+  selectedShape: FormControl<string | null> = new FormControl(null);
+  shapesList: string[] = [];
   markerOptions: google.maps.MarkerOptions = { draggable: false };
   selectedShapeMarkers: {
     position: google.maps.LatLngLiteral;
     label: string;
   }[] = [];
 
-  constructor(private gtfsService: GtfsService) {}
+  showMaps: boolean = false;
+
+  constructor(private gtfsService: GtfsService) {
+    this.showMaps = this.gtfsService.validateGTFSData();
+  }
 
   ngOnInit() {
-    this.generateVertices();
+    // this.generateVertices();
   }
 
   options: google.maps.MapOptions = {
@@ -43,7 +62,9 @@ export class RouteMapComponent {
 
   generateVertices() {
     // load the shape details from the GTFS service
-    const shape = this.gtfsService.getShapeDetails(this.selectedShape);
+    const shape = this.gtfsService.getShapeDetails(
+      this.selectedShape.value ?? 'SHP001'
+    );
 
     // sort the shape points by shape_pt_sequence
     shape.sort((a, b) => a.shape_pt_sequence - b.shape_pt_sequence);

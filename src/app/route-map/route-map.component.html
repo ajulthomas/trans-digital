@@ -1,9 +1,28 @@
-<div class="map-container">
-    <google-map height="750px" width="100%" [options]="options">
-        <map-transit-layer />
-        <map-polyline [options]="polylineOptions" />
-        @for (point of selectedShapeMarkers; track point) {
-        <map-marker [position]="point.position" [label]="point.label" [options]="markerOptions" />
-        }
-    </google-map>>
+<div class="route-map-container">
+
+    @if(showMaps) {
+
+
+    <div class="selection-container">
+        <div class="selection-header">
+            <h2>Route Map</h2>
+            <p>Select a shape to view on the map.</p>
+        </div>
+    </div>
+
+    <div class="map-wrapper">
+        <google-map height="800" width="100%" [options]="options">
+            <map-transit-layer />
+            <map-polyline [options]="polylineOptions" />
+            @for (point of selectedShapeMarkers; track point) {
+            <map-marker [position]="point.position" [label]="point.label" [options]="markerOptions" />
+            }
+        </google-map>
+    </div>
+    } @else {
+    <div class="data-error">
+        <h2>No data available</h2>
+        <p>Please upload bus schedule data to view the map.</p>
+    </div>
+    }
 </div>

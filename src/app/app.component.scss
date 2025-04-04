@@ -1,14 +1,22 @@
 .app-version-details {
   padding: 25px;
   color: #fd0303;
-  font-weight: bold;
+  display: flex;
+  p {
+    padding: 0 8px;
+    border-right: 3px solid #440101;
+  }
+  code {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
 }
 
 .branding-container {
   padding: 10px;
   text-align: center;
   background-color: #f3f3f3;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
   .app-logo {
     width: 140px;
     height: 80px;

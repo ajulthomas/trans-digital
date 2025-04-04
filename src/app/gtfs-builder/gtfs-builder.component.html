@@ -17,13 +17,14 @@
         <mat-card-content>
 
 
-            @if (performance()) {
+            @if (dataValid() && performance()) {
             <div class="performance-metrics">
                 <p> Time taken to process file: <b>{{ performance().toFixed(2) }} ms</b> </p>
             </div>
             }
 
 
+            @if (dataValid()) {
             <mat-tab-group>
                 <!-- <mat-tab label="Overview">
                     Data Overview comes in here
@@ -35,42 +36,27 @@
                     <calendar-details></calendar-details>
                 </mat-tab>
                 <mat-tab label="Routes">
-                    @if (performance()) {
                     <data-table datatype="routes"></data-table>
-                    } @else {
-                    <p> Upload a file to view data </p>
-                    }
                 </mat-tab>
                 <mat-tab label="Trips">
-                    @if (performance()) {
                     <data-table datatype="trips"></data-table>
-                    } @else {
-                    <p> Upload a file to view data </p>
-                    }
                 </mat-tab>
                 <mat-tab label="Stops">
-                    @if (performance()) {
                     <data-table datatype="stops"></data-table>
-                    } @else {
-                    <p> Upload a file to view data </p>
-                    }
                 </mat-tab>
                 <mat-tab label="Stop Times">
-                    @if (performance()) {
                     <data-table datatype="stop_times"></data-table>
-                    } @else {
-                    <p> Upload a file to view data </p>
-                    }
                 </mat-tab>
                 <mat-tab label="Shapes">
-                    @if (performance()) {
                     <data-table datatype="shapes"></data-table>
-                    } @else {
-                    <p> Upload a file to view data </p>
-                    }
                 </mat-tab>
             </mat-tab-group>
-
+            } @else {
+            <div class="data-error">
+                <h2>No data available</h2>
+                <p>Please upload bus schedule data to view the GTFS data.</p>
+            </div>
+            }
         </mat-card-content>
     </mat-card>
 
