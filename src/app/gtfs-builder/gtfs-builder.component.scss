@@ -1,3 +1,7 @@
+.gtfs-container {
+  margin-top: 20px;
+}
+
 .gtfs-card {
   width: 95%;
   margin: 0 auto;
@@ -16,10 +20,6 @@
 
   .gtfs-subtitle {
     color: #797878;
-  }
-
-  .gtfs-buttons-container {
-    // padding: 20px;
   }
 
   .gtfs-buttons {
@@ -43,4 +43,13 @@
   b {
     color: rgb(5, 73, 3);
   }
+}
+
+.data-error {
+  // width: 100%;
+  text-align: center;
+  background-color: #f8c4c4;
+  color: #991c1c;
+  border-radius: 15px;
+  padding: 30px;
 }

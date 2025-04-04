@@ -1,23 +1,24 @@
 <mat-card class="calendar-card">
+    <section class="data-table">
+        <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+            @for (column of displayedColumns; track column) {
+            <ng-container [matColumnDef]="column">
+                <mat-header-cell *matHeaderCellDef> {{ columnNames[column] }} </mat-header-cell>
+                <!-- <td mat-cell *matCellDef="let element"> {{ element[column] }} </td> -->
+                <mat-cell *matCellDef="let element">
+                    @if (['service_id', 'start_date', 'end_date'].includes(column)) {
+                    {{ element[column].toUpperCase() }}
+                    } @else {
+                    <span class="chip" [style.background-color]="element[column] == 1 ? '#82db82' : '#db8282'">
+                        {{ element[column] == 1 ? 'Yes' : 'No' }}
+                    </span>
+                    }
+                </mat-cell>
+            </ng-container>
+            }
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        @for (column of displayedColumns; track column) {
-        <ng-container [matColumnDef]="column">
-            <th mat-header-cell *matHeaderCellDef> {{ columnNames[column] }} </th>
-            <!-- <td mat-cell *matCellDef="let element"> {{ element[column] }} </td> -->
-            <td mat-cell *matCellDef="let element">
-                @if (['service_id', 'start_date', 'end_date'].includes(column)) {
-                {{ element[column].toUpperCase() }}
-                } @else {
-                <span class="chip" [style.background-color]="element[column] == 1 ? '#82db82' : '#db8282'">
-                    {{ element[column] == 1 ? 'Yes' : 'No' }}
-                </span>
-                }
-            </td>
-        </ng-container>
-        }
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: 'true';"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </section>
 </mat-card>

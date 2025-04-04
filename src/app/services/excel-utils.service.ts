@@ -21,6 +21,15 @@ export class ExcelUtilsService {
   busSchedule: BusScheduleData = {};
   routes: Set<string> = new Set();
   stops: Map<string, BusStopData> = new Map();
+  currentFileValid: WritableSignal<boolean> = signal<boolean>(false);
+
+  updateFileValidity() {
+    if (this.routes.size > 0 && this.stops.size > 0) {
+      this.currentFileValid.set(true);
+    } else {
+      this.currentFileValid.set(false);
+    }
+  }
 
   processFile(data: ArrayBuffer) {
     const start = performance.now();
@@ -43,12 +52,14 @@ export class ExcelUtilsService {
       console.log(this.busSchedule);
       console.log(this.routes);
       console.log(this.stops);
+      this.updateFileValidity();
     } catch (error) {
       console.error(error);
       this.messageService.showMessage(
         'An error occured while processing the file. Please check the file and try again',
         'error'
       );
+      this.currentFileValid.set(false);
     } finally {
       const end = performance.now();
       console.log(`Time taken to process file: ${end - start}ms`);

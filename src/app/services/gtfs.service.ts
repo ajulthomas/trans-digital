@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BusScheduleData, RouteSchedule } from '../types/route-data.interface';
 import {
   AgencyDetails,
+  CalendarDatesDetails,
   CalendarDetails,
   GTFSData,
   GTFSFiles,
@@ -30,7 +31,7 @@ export class GtfsService {
     stops: [],
     trips: [],
     stop_times: [],
-    calendar_dates: [],
+    calendar_dates: CALENDAR_DATES,
     shapes: [],
   };
 
@@ -50,6 +51,15 @@ export class GtfsService {
   shape_trip_map: Map<string, string[]> = new Map();
   // shape_ID_trip_ID_map: Map<string, string[]> = new Map();
   trip_ID_shape_ID_map: Map<string, string> = new Map();
+
+  validateGTFSData() {
+    return (
+      this.gtfsData.routes.length > 0 &&
+      this.gtfsData.stops.length > 0 &&
+      this.gtfsData.trips.length > 0 &&
+      this.gtfsData.stop_times.length > 0
+    );
+  }
 
   extractGTFSInfo() {
     this.extractRoutes();
@@ -148,8 +158,6 @@ export class GtfsService {
         }
       }
     }
-    console.log(trips.size);
-    console.log(this.gtfsData.trips.length);
   }
 
   extractStopTime(tripID: string, routeObj: RouteSchedule) {
@@ -167,8 +175,8 @@ export class GtfsService {
         ? this.gtfsUtils.parseTime(routeObj.arrival)
         : this.gtfsUtils.parseTime(routeObj.departure);
       const departureTime = routeObj.departure
-        ? this.gtfsUtils.parseTime(routeObj.departure as Date)
-        : '';
+        ? this.gtfsUtils.parseTime(routeObj.departure)
+        : this.gtfsUtils.parseTime(routeObj.arrival);
       const stopTimeDetails: StopTimeDetails = {
         trip_id: tripID,
         arrival_time: arrivalTime,
@@ -181,11 +189,11 @@ export class GtfsService {
       this.gtfsData.stop_times.push(stopTimeDetails);
     } catch (error) {
       console.error('Error parsing time:', error, routeObj);
-      console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
-      console.log(
-        (routeObj.departure as string).length,
-        typeof routeObj.departure
-      );
+      // console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
+      // console.log(
+      //   (routeObj.departure as string).length,
+      //   typeof routeObj.departure
+      // );
       return;
     }
   }
@@ -227,15 +235,15 @@ export class GtfsService {
           shape_pt_lat: parseFloat(lat),
           shape_pt_lon: parseFloat(lon),
           shape_pt_sequence: parseInt(stopSequence, 10),
-          shape_dist_traveled: 0,
+          // shape_dist_traveled: 0,
         };
         this.gtfsData.shapes.push(shapeDetail);
       });
       ID += 1;
     }
-    console.log('Printing shape GTFS data');
-    console.log(this.gtfsData.shapes.length);
-    console.log(this.gtfsData.shapes);
+    // console.log('Printing shape GTFS data');
+    // console.log(this.gtfsData.shapes.length);
+    // console.log(this.gtfsData.shapes);
   }
 
   createShapeMap(tripShape: Map<string, string[]>) {
@@ -275,6 +283,10 @@ export class GtfsService {
     return code;
   }
 
+  getShapeDetails(shapeID: string): ShapeDetails[] {
+    return this.gtfsData.shapes.filter((shape) => shape.shape_id === shapeID);
+  }
+
   downloadGTFS() {
     this.gtfsUtils.saveAsZip(this.gtfsData);
   }
@@ -305,6 +317,14 @@ export const CALENDAR_DATA: CalendarDetails[] = [
     sunday: 0,
     start_date: '20250101',
     end_date: '20301231',
+  },
+];
+
+export const CALENDAR_DATES: CalendarDatesDetails[] = [
+  {
+    service_id: 'daily',
+    date: '20250101',
+    exception_type: 2,
   },
 ];
 
