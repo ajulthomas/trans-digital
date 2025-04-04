@@ -158,8 +158,6 @@ export class GtfsService {
         }
       }
     }
-    console.log(trips.size);
-    console.log(this.gtfsData.trips.length);
   }
 
   extractStopTime(tripID: string, routeObj: RouteSchedule) {
@@ -191,11 +189,11 @@ export class GtfsService {
       this.gtfsData.stop_times.push(stopTimeDetails);
     } catch (error) {
       console.error('Error parsing time:', error, routeObj);
-      console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
-      console.log(
-        (routeObj.departure as string).length,
-        typeof routeObj.departure
-      );
+      // console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
+      // console.log(
+      //   (routeObj.departure as string).length,
+      //   typeof routeObj.departure
+      // );
       return;
     }
   }
@@ -243,9 +241,9 @@ export class GtfsService {
       });
       ID += 1;
     }
-    console.log('Printing shape GTFS data');
-    console.log(this.gtfsData.shapes.length);
-    console.log(this.gtfsData.shapes);
+    // console.log('Printing shape GTFS data');
+    // console.log(this.gtfsData.shapes.length);
+    // console.log(this.gtfsData.shapes);
   }
 
   createShapeMap(tripShape: Map<string, string[]>) {

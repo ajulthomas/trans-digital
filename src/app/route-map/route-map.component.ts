@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import {
   GoogleMap,
   // MapDirectionsRenderer,
@@ -12,6 +12,8 @@ import { MatCardModule } from '@angular/material/card';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+// import { ChangeDetectorRef } from '@angular/core';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-route-map',
@@ -47,12 +49,36 @@ export class RouteMapComponent {
 
   showMaps: boolean = false;
 
-  constructor(private gtfsService: GtfsService) {
+  constructor(
+    private gtfsService: GtfsService,
+    // private cdr: ChangeDetectorRef,
+    private zone: NgZone
+  ) {
     this.showMaps = this.gtfsService.validateGTFSData();
   }
 
   ngOnInit() {
     // this.generateVertices();
+    const shapesArray = [...this.gtfsService.trip_ID_shape_ID_map.values()];
+    this.shapesList = [...new Set(shapesArray)];
+    this.selectedShape.valueChanges.subscribe((value) => {
+      this.vertices = [];
+      this.selectedShapeMarkers = [];
+      this.polylineOptions.path = [];
+
+      if (value) {
+        console.log('Selected shape ID:', value);
+        this.generateVertices(value);
+      }
+
+      console.log(
+        'vertices length',
+        this.vertices.length,
+        this.polylineOptions.path.length,
+        this.selectedShapeMarkers.length
+      );
+      // this.cdr.detectChanges(); // Trigger change detection manually
+    });
   }
 
   options: google.maps.MapOptions = {
@@ -60,11 +86,9 @@ export class RouteMapComponent {
     zoom: 14,
   };
 
-  generateVertices() {
+  generateVertices(shapeID: string) {
     // load the shape details from the GTFS service
-    const shape = this.gtfsService.getShapeDetails(
-      this.selectedShape.value ?? 'SHP001'
-    );
+    const shape = this.gtfsService.getShapeDetails(shapeID);
 
     // sort the shape points by shape_pt_sequence
     shape.sort((a, b) => a.shape_pt_sequence - b.shape_pt_sequence);
@@ -77,6 +101,14 @@ export class RouteMapComponent {
         position: { lat, lng },
         label: point.shape_pt_sequence.toString(),
       });
+    });
+
+    this.zone.run(() => {
+      this.polylineOptions = {
+        ...this.polylineOptions,
+        path: [...this.vertices],
+      };
+      this.selectedShapeMarkers = [...this.selectedShapeMarkers];
     });
   }
 }
