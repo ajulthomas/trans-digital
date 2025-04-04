@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BusScheduleData, RouteSchedule } from '../types/route-data.interface';
 import {
   AgencyDetails,
+  CalendarDatesDetails,
   CalendarDetails,
   GTFSData,
   GTFSFiles,
@@ -30,7 +31,7 @@ export class GtfsService {
     stops: [],
     trips: [],
     stop_times: [],
-    calendar_dates: [],
+    calendar_dates: CALENDAR_DATES,
     shapes: [],
   };
 
@@ -167,8 +168,8 @@ export class GtfsService {
         ? this.gtfsUtils.parseTime(routeObj.arrival)
         : this.gtfsUtils.parseTime(routeObj.departure);
       const departureTime = routeObj.departure
-        ? this.gtfsUtils.parseTime(routeObj.departure as Date)
-        : '';
+        ? this.gtfsUtils.parseTime(routeObj.departure)
+        : this.gtfsUtils.parseTime(routeObj.arrival);
       const stopTimeDetails: StopTimeDetails = {
         trip_id: tripID,
         arrival_time: arrivalTime,
@@ -227,7 +228,7 @@ export class GtfsService {
           shape_pt_lat: parseFloat(lat),
           shape_pt_lon: parseFloat(lon),
           shape_pt_sequence: parseInt(stopSequence, 10),
-          shape_dist_traveled: 0,
+          // shape_dist_traveled: 0,
         };
         this.gtfsData.shapes.push(shapeDetail);
       });
@@ -309,6 +310,14 @@ export const CALENDAR_DATA: CalendarDetails[] = [
     sunday: 0,
     start_date: '20250101',
     end_date: '20301231',
+  },
+];
+
+export const CALENDAR_DATES: CalendarDatesDetails[] = [
+  {
+    service_id: 'daily',
+    date: '20250101',
+    exception_type: 2,
   },
 ];
 
