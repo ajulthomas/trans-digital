@@ -34,6 +34,19 @@ export class GtfsBuilderComponent {
   // performance as signal
   performance: WritableSignal<number> = signal<number>(0);
 
+  dataValid: WritableSignal<boolean> = signal<boolean>(false);
+
+  ngOnInit() {
+    if (
+      this.excelUtilsService.currentFileValid() &&
+      this.excelUtilsService.currentFileValid()
+    ) {
+      this.dataValid.set(true);
+    } else {
+      this.dataValid.set(false);
+    }
+  }
+
   onFileSelected(event: any) {
     // console.log(event.target.files);
     const files = event.target.files;
@@ -64,13 +77,20 @@ export class GtfsBuilderComponent {
     const reader = new FileReader();
     reader.onload = () => {
       // progress.set(100);
-      this.messageService.showMessage('File read successfully 🚀');
       const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
       const start = performance.now();
       this.excelUtilsService.processFile(data);
       this.gtfsService.extractGTFSInfo();
       const end = performance.now();
       time.set(end - start);
+
+      if (
+        this.excelUtilsService.currentFileValid() &&
+        this.excelUtilsService.currentFileValid()
+      ) {
+        this.messageService.showMessage('File read successfully 🚀');
+        this.dataValid.set(true);
+      }
     };
     reader.onprogress = (event) => {
       if (event.lengthComputable) {

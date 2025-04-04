@@ -52,6 +52,15 @@ export class GtfsService {
   // shape_ID_trip_ID_map: Map<string, string[]> = new Map();
   trip_ID_shape_ID_map: Map<string, string> = new Map();
 
+  validateGTFSData() {
+    return (
+      this.gtfsData.routes.length > 0 &&
+      this.gtfsData.stops.length > 0 &&
+      this.gtfsData.trips.length > 0 &&
+      this.gtfsData.stop_times.length > 0
+    );
+  }
+
   extractGTFSInfo() {
     this.extractRoutes();
     this.extractStops();
@@ -149,8 +158,6 @@ export class GtfsService {
         }
       }
     }
-    console.log(trips.size);
-    console.log(this.gtfsData.trips.length);
   }
 
   extractStopTime(tripID: string, routeObj: RouteSchedule) {
@@ -182,11 +189,11 @@ export class GtfsService {
       this.gtfsData.stop_times.push(stopTimeDetails);
     } catch (error) {
       console.error('Error parsing time:', error, routeObj);
-      console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
-      console.log(
-        (routeObj.departure as string).length,
-        typeof routeObj.departure
-      );
+      // console.log((routeObj.arrival as string).length, typeof routeObj.arrival);
+      // console.log(
+      //   (routeObj.departure as string).length,
+      //   typeof routeObj.departure
+      // );
       return;
     }
   }
@@ -234,9 +241,9 @@ export class GtfsService {
       });
       ID += 1;
     }
-    console.log('Printing shape GTFS data');
-    console.log(this.gtfsData.shapes.length);
-    console.log(this.gtfsData.shapes);
+    // console.log('Printing shape GTFS data');
+    // console.log(this.gtfsData.shapes.length);
+    // console.log(this.gtfsData.shapes);
   }
 
   createShapeMap(tripShape: Map<string, string[]>) {
@@ -274,6 +281,10 @@ export class GtfsService {
     const code = this.routeDirectionCodes.get(routeID)?.size ?? 0;
     this.routeDirectionCodes.get(routeID)?.set(direction, code);
     return code;
+  }
+
+  getShapeDetails(shapeID: string): ShapeDetails[] {
+    return this.gtfsData.shapes.filter((shape) => shape.shape_id === shapeID);
   }
 
   downloadGTFS() {
