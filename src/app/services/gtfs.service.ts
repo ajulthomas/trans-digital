@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BusScheduleData, RouteSchedule } from '../types/route-data.interface';
 import {
   AgencyDetails,
+  CalendarDatesDetails,
   CalendarDetails,
   GTFSData,
   GTFSFiles,
@@ -30,7 +31,7 @@ export class GtfsService {
     stops: [],
     trips: [],
     stop_times: [],
-    calendar_dates: [],
+    calendar_dates: CALENDAR_DATES,
     shapes: [],
   };
 
@@ -305,6 +306,14 @@ export const CALENDAR_DATA: CalendarDetails[] = [
     sunday: 0,
     start_date: '20250101',
     end_date: '20301231',
+  },
+];
+
+export const CALENDAR_DATES: CalendarDatesDetails[] = [
+  {
+    service_id: 'daily',
+    date: '20250101',
+    exception_type: 2,
   },
 ];
 
