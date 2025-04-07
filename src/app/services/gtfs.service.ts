@@ -62,6 +62,7 @@ export class GtfsService {
   }
 
   extractGTFSInfo() {
+    this.resetGTFS();
     this.extractRoutes();
     this.extractStops();
     this.extractTrips(this.excelUtilsService.busSchedule);
@@ -290,6 +291,31 @@ export class GtfsService {
   downloadGTFS() {
     this.gtfsUtils.saveAsZip(this.gtfsData);
   }
+
+  resetGTFS() {
+    this.gtfsData = {
+      agency: AGENCY_DATA,
+      calendar: CALENDAR_DATA,
+      routes: [],
+      stops: [],
+      trips: [],
+      stop_times: [],
+      calendar_dates: CALENDAR_DATES,
+      shapes: [],
+    };
+    this.gtfsFiles = {
+      agency: '',
+      calendar: '',
+      routes: '',
+      stops: '',
+      trips: '',
+    };
+    this.routeDirectionCodes = new Map();
+    this.stops = [];
+    this.trip_shapes = new Map();
+    this.shape_trip_map = new Map();
+    this.trip_ID_shape_ID_map = new Map();
+  }
 }
 
 export const AGENCY_DATA: AgencyDetails[] = [
@@ -314,7 +340,7 @@ export const CALENDAR_DATA: CalendarDetails[] = [
     thursday: 1,
     friday: 1,
     saturday: 1,
-    sunday: 0,
+    sunday: 1,
     start_date: '20250101',
     end_date: '20301231',
   },

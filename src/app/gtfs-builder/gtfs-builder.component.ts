@@ -9,6 +9,8 @@ import { MessageService } from '../services/message.service';
 import { GtfsService } from '../services/gtfs.service';
 import { CalendarDetailsComponent } from '../calendar-details/calendar-details.component';
 import { DataTableComponent } from '../data-table/data-table.component';
+import { Router } from '@angular/router';
+import { OverviewComponent } from '../overview/overview.component';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -20,6 +22,7 @@ import { DataTableComponent } from '../data-table/data-table.component';
     AgencyDetailsComponent,
     CalendarDetailsComponent,
     DataTableComponent,
+    OverviewComponent,
   ],
   templateUrl: './gtfs-builder.component.html',
   styleUrl: './gtfs-builder.component.scss',
@@ -28,7 +31,8 @@ export class GtfsBuilderComponent {
   constructor(
     private excelUtilsService: ExcelUtilsService,
     private messageService: MessageService,
-    private gtfsService: GtfsService
+    private gtfsService: GtfsService,
+    private router: Router
   ) {}
 
   // performance as signal
@@ -48,6 +52,10 @@ export class GtfsBuilderComponent {
   }
 
   onFileSelected(event: any) {
+    // clear previous data
+    this.performance.set(0);
+    this.dataValid.set(false);
+    this.gtfsService.resetGTFS();
     // console.log(event.target.files);
     const files = event.target.files;
     for (const file of files) {
@@ -106,5 +114,10 @@ export class GtfsBuilderComponent {
       );
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  navigateToMap() {
+    // Navigate to the map component
+    this.router.navigate(['/route-map']);
   }
 }

@@ -1,0 +1,42 @@
+<div class="overview-container">
+
+    <section class="stats-container">
+        @for(stat of getKeys(stats); track stat) {
+        <div class="stat">
+            <span class="value">{{stats[stat]}}</span>
+            <span class="label">{{statDisplayLabels[stat]}}</span>
+        </div>
+        }
+    </section>
+
+    <mat-accordion displayMode="flat">
+        @for (bus of busNames; track bus) {
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title> {{ bus }} </mat-panel-title>
+                <!-- <mat-panel-description> </mat-panel-description> -->
+            </mat-expansion-panel-header>
+
+            <section class="data-table">
+                <mat-table [dataSource]="data[bus].routeSchedule" class="mat-elevation-z8">
+                    @for (column of displayedColumns; track column) {
+                    <ng-container [matColumnDef]="column">
+                        <mat-header-cell *matHeaderCellDef> {{ columnNames[column] }} </mat-header-cell>
+                        @if (column == 'arrival' || column == 'departure') {
+                        <mat-cell *matCellDef="let element"> {{getTime(element[column])}} </mat-cell>
+                        } @else {
+                        <mat-cell *matCellDef="let element"> {{element[column]}} </mat-cell>
+                        }
+
+                    </ng-container>
+                    }
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: 'true';"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </mat-table>
+            </section>
+
+        </mat-expansion-panel>
+        }
+    </mat-accordion>
+</div>

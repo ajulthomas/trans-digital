@@ -1,25 +1,28 @@
 .app-version-details {
-  padding: 25px;
-  color: #fd0303;
+  float: right;
+  // width: 95%;
+  color: #494949;
+  margin: 0 5%;
   display: flex;
+  font-size: 0.8rem;
   p {
     padding: 0 8px;
-    border-right: 3px solid #440101;
+    border-right: 1px solid #b4b4b4;
   }
   code {
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
   }
 }
 
 .branding-container {
-  padding: 10px;
+  padding-bottom: 10px;
   text-align: center;
   background-color: #f3f3f3;
   // margin-bottom: 20px;
   .app-logo {
-    width: 140px;
-    height: 80px;
+    width: 100px;
+    height: 60px;
     display: inline-block;
   }
 
@@ -28,7 +31,7 @@
     position: relative;
     // top: -30px;
     .company-name {
-      font-size: 2rem;
+      font-size: 1.5rem;
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 500;
@@ -36,11 +39,35 @@
       padding-bottom: 5px;
     }
     .tagline {
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: #747474;
       letter-spacing: 8px;
       text-transform: uppercase;
     }
     margin-right: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-version-details {
+    font-size: 0.6rem;
+    p {
+      padding: 0 5px;
+    }
+  }
+  .branding-container {
+    .app-logo {
+      width: 80px;
+      height: 50px;
+    }
+    .text-container {
+      .company-name {
+        font-size: 1.2rem;
+      }
+      .tagline {
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+      }
+    }
   }
 }

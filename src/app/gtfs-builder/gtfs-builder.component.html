@@ -10,7 +10,13 @@
                 <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" />
                 <button mat-raised-button (click)="fileInput.click()" class="gtfs-buttons upload-button">Upload bus
                     schedule</button>
-                <button mat-flat-button (click)="downloadGTFS()">Build GTFS and Download</button>
+
+                @if (dataValid()) {
+                <button mat-flat-button (click)="navigateToMap()" class="gtfs-buttons">View on
+                    Map</button>
+                <button mat-flat-button (click)="downloadGTFS()">Build GTFS and
+                    Download</button>
+                }
             </div>
 
         </mat-card-header>
@@ -18,7 +24,7 @@
 
 
             @if (dataValid() && performance()) {
-            <div class="performance-metrics">
+            <div class=" performance-metrics">
                 <p> Time taken to process file: <b>{{ performance().toFixed(2) }} ms</b> </p>
             </div>
             }
@@ -29,6 +35,10 @@
                 <!-- <mat-tab label="Overview">
                     Data Overview comes in here
                 </mat-tab> -->
+
+                <mat-tab label="Overview">
+                    <app-overview></app-overview>
+                </mat-tab>
                 <mat-tab label="Agency">
                     <agency-details></agency-details>
                 </mat-tab>

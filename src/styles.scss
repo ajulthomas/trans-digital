@@ -49,3 +49,9 @@ body {
     )
   );
 }
+
+@media (max-width: 600px) {
+  body {
+    font-size: 0.8rem;
+  }
+}

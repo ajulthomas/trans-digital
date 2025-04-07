@@ -4,8 +4,7 @@
 
 .gtfs-card {
   width: 95%;
-  margin: 0 auto;
-  // margin-top: 80px;
+  margin: auto;
   background-color: #e1e5f2;
   padding: 10px;
 
@@ -52,4 +51,21 @@
   color: #991c1c;
   border-radius: 15px;
   padding: 30px;
+}
+
+@media (max-width: 600px) {
+  .card-header {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gtfs-card {
+    width: 98%;
+    margin: auto;
+    padding: 3px;
+  }
+
+  .gtfs-buttons {
+    margin: 4px;
+  }
 }

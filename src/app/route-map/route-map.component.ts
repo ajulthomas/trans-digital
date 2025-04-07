@@ -14,6 +14,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 // import { ChangeDetectorRef } from '@angular/core';
 import { NgZone } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-route-map',
@@ -27,6 +29,7 @@ import { NgZone } from '@angular/core';
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatButtonModule,
   ],
   templateUrl: './route-map.component.html',
   styleUrl: './route-map.component.scss',
@@ -52,7 +55,8 @@ export class RouteMapComponent {
   constructor(
     private gtfsService: GtfsService,
     // private cdr: ChangeDetectorRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private router: Router
   ) {
     this.showMaps = this.gtfsService.validateGTFSData();
   }
@@ -110,5 +114,9 @@ export class RouteMapComponent {
       };
       this.selectedShapeMarkers = [...this.selectedShapeMarkers];
     });
+  }
+
+  gotoGTFSBuilder() {
+    this.router.navigate(['/']);
   }
 }

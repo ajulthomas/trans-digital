@@ -1,28 +1,30 @@
 <div class="route-map-container">
-
-    @if(showMaps) {
-
-
     <div class="selection-container">
         <div class="selection-header">
             <h2>Route Map</h2>
             <p>Select a shape to view on the map.</p>
         </div>
-        <mat-form-field>
-            <mat-label>Route Shape</mat-label>
-            <mat-select [formControl]="selectedShape" required>
-                <mat-option>--</mat-option>
-                @for (shape of shapesList; track shape) {
-                <mat-option [value]="shape">{{shape}}</mat-option>
+        <div class="form-field-container">
+            <mat-form-field appearance="outline" class="map-form-field">
+                <mat-label>Route Shape</mat-label>
+                <mat-select [formControl]="selectedShape" required>
+                    <mat-option>--</mat-option>
+                    @for (shape of shapesList; track shape) {
+                    <mat-option [value]="shape">{{shape}}</mat-option>
+                    }
+                </mat-select>
+                @if (selectedShape.hasError('required')) {
+                <mat-error>Please choose an shape to plot</mat-error>
                 }
-            </mat-select>
-            @if (selectedShape.hasError('required')) {
-            <mat-error>Please choose an shape to plot</mat-error>
-            }
-        </mat-form-field>
+            </mat-form-field>
+        </div>
+
+        <span class="spacer"></span>
+        <button mat-flat-button (click)="gotoGTFSBuilder()">Back</button>
     </div>
+    @if(showMaps) {
     <div class="map-wrapper">
-        <google-map height="800" width="100%" [options]="options">
+        <google-map width="100%" [options]="options">
             <map-transit-layer />
             @if(vertices.length > 0) {
             <map-polyline [options]="polylineOptions" />
@@ -32,11 +34,11 @@
             }
         </google-map>
     </div>
-
     } @else {
     <div class="data-error">
         <h2>No data available</h2>
         <p>Please upload bus schedule data to view the map.</p>
     </div>
     }
+
 </div>
