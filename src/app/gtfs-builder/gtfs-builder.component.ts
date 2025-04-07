@@ -10,6 +10,7 @@ import { GtfsService } from '../services/gtfs.service';
 import { CalendarDetailsComponent } from '../calendar-details/calendar-details.component';
 import { DataTableComponent } from '../data-table/data-table.component';
 import { Router } from '@angular/router';
+import { OverviewComponent } from '../overview/overview.component';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -21,6 +22,7 @@ import { Router } from '@angular/router';
     AgencyDetailsComponent,
     CalendarDetailsComponent,
     DataTableComponent,
+    OverviewComponent,
   ],
   templateUrl: './gtfs-builder.component.html',
   styleUrl: './gtfs-builder.component.scss',
