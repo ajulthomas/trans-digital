@@ -9,6 +9,7 @@ import { MessageService } from '../services/message.service';
 import { GtfsService } from '../services/gtfs.service';
 import { CalendarDetailsComponent } from '../calendar-details/calendar-details.component';
 import { DataTableComponent } from '../data-table/data-table.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-gtfs-builder',
@@ -28,7 +29,8 @@ export class GtfsBuilderComponent {
   constructor(
     private excelUtilsService: ExcelUtilsService,
     private messageService: MessageService,
-    private gtfsService: GtfsService
+    private gtfsService: GtfsService,
+    private router: Router
   ) {}
 
   // performance as signal
@@ -106,5 +108,10 @@ export class GtfsBuilderComponent {
       );
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  navigateToMap() {
+    // Navigate to the map component
+    this.router.navigate(['/route-map']);
   }
 }

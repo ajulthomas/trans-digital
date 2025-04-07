@@ -34,3 +34,15 @@
   border-radius: 5px;
   background-color: #044caa;
 }
+
+@media (max-width: 600px) {
+  .app-name {
+    font-size: 0.8em;
+  }
+
+  .app-logo {
+    width: 25px;
+    height: 25px;
+    margin-right: 7px;
+  }
+}
