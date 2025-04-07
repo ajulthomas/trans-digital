@@ -33,6 +33,10 @@ export class ExcelUtilsService {
 
   processFile(data: ArrayBuffer) {
     const start = performance.now();
+    this.busSchedule = {};
+    this.routes = new Set();
+    this.stops = new Map();
+    this.currentFileValid.set(false);
     try {
       const workbook = read(data, { type: 'array', cellDates: true });
       const wsnames = workbook.SheetNames;

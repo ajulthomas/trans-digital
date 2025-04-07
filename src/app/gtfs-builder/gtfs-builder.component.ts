@@ -52,6 +52,10 @@ export class GtfsBuilderComponent {
   }
 
   onFileSelected(event: any) {
+    // clear previous data
+    this.performance.set(0);
+    this.dataValid.set(false);
+    this.gtfsService.resetGTFS();
     // console.log(event.target.files);
     const files = event.target.files;
     for (const file of files) {
