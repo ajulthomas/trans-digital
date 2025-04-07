@@ -1,14 +1,17 @@
 .app-version-details {
-  padding: 25px;
-  color: #fd0303;
+  float: right;
+  // width: 95%;
+  color: #494949;
+  margin: 0 5%;
   display: flex;
+  font-size: 0.8rem;
   p {
     padding: 0 8px;
-    border-right: 3px solid #440101;
+    border-right: 1px solid #b4b4b4;
   }
   code {
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
   }
 }
 
