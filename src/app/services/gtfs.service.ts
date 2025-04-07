@@ -314,7 +314,7 @@ export const CALENDAR_DATA: CalendarDetails[] = [
     thursday: 1,
     friday: 1,
     saturday: 1,
-    sunday: 0,
+    sunday: 1,
     start_date: '20250101',
     end_date: '20301231',
   },
