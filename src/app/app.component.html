@@ -1,3 +1,19 @@
 <app-navbar />
 
-<app-gtfs-builder />
+<!-- sponsor logo goes here -->
+<div class="branding-container">
+    <div class="text-container">
+        <div class="company-name">National Electric Vehicle Centre Of Excellence</div>
+        <span class="tagline">Unlocking Renewable Transport</span>
+    </div>
+    <img src="nevce-logo.png" alt="" class="app-logo">
+</div>
+
+<!-- <app-gtfs-builder /> -->
+<router-outlet></router-outlet>
+
+<div class="app-version-details">
+    <p>version: <code> {{ appVersion }} </code></p>
+    <p>build_date: <code>{{ buildDate }}</code></p>
+    <p>build_environment: <code>{{ buildEnv }}</code> </p>
+</div>

@@ -1,173 +1,206 @@
 import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { read, utils, WorkSheet } from 'xlsx';
+import { MessageService } from './message.service';
+import {
+  DepotDetails,
+  BusScheduleData,
+  RouteSchedule,
+  ScheduleData,
+} from '../types/route-data.interface';
+import { GtfsUtilsService } from './gtfs-utils.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExcelUtilsService {
-  constructor() {}
+  constructor(
+    private messageService: MessageService,
+    private gtfsUtils: GtfsUtilsService
+  ) {}
 
-  route_data: RouteData = {};
+  busSchedule: BusScheduleData = {};
+  routes: Set<string> = new Set();
+  stops: Map<string, BusStopData> = new Map();
+  currentFileValid: WritableSignal<boolean> = signal<boolean>(false);
 
-  readFile(file: File, progress: WritableSignal<number> = signal<number>(0)) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      progress.set(100);
-      const data: ArrayBuffer = new Uint8Array(reader.result as ArrayBuffer);
-      this.processFile(data);
-    };
-    reader.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        progress.set(percent);
-      }
-    };
-    reader.onerror = (error) => {
-      console.error(error);
-    };
-    reader.readAsArrayBuffer(file);
+  updateFileValidity() {
+    if (this.routes.size > 0 && this.stops.size > 0) {
+      this.currentFileValid.set(true);
+    } else {
+      this.currentFileValid.set(false);
+    }
   }
 
   processFile(data: ArrayBuffer) {
-    const workbook = read(data, { type: 'array', cellDates: true });
-    const wsnames = workbook.SheetNames;
-    console.log(wsnames);
-    // const ws = workbook.Sheets[wsnames[0]];
+    const start = performance.now();
+    this.busSchedule = {};
+    this.routes = new Set();
+    this.stops = new Map();
+    this.currentFileValid.set(false);
+    try {
+      const workbook = read(data, { type: 'array', cellDates: true });
+      const wsnames = workbook.SheetNames;
+      // console.log(wsnames);
+      // const ws = workbook.Sheets[wsnames[0]];
 
-    for (const wsname of wsnames) {
-      const ws = workbook.Sheets[wsname];
-      this.processSheet(ws, wsname);
+      for (const wsname of wsnames) {
+        const ws = workbook.Sheets[wsname];
+        this.processSheet(ws, wsname);
 
-      // remove all dots and spaces from the sheet name
-      const schedule_name = wsname.replace(/(\.\s*)/g, '_');
-      console.log(`schedule_name = ${schedule_name}`);
+        // remove all dots and spaces from the sheet name
+        const busName = wsname.replace(/(\.\s*)/g, '_');
+        // console.log(`busName = ${busName}`);
 
-      this.route_data[schedule_name] = this.processSheet(ws, wsname);
+        this.busSchedule[busName] = this.processSheet(ws, wsname);
+      }
+      console.log(this.busSchedule);
+      console.log(this.routes);
+      console.log(this.stops);
+      this.updateFileValidity();
+    } catch (error) {
+      console.error(error);
+      this.messageService.showMessage(
+        'An error occured while processing the file. Please check the file and try again',
+        'error'
+      );
+      this.currentFileValid.set(false);
+    } finally {
+      const end = performance.now();
+      console.log(`Time taken to process file: ${end - start}ms`);
     }
-
-    console.log(this.route_data);
   }
 
   processSheet(ws: WorkSheet, wsname: string): ScheduleData {
     const sheet_range = ws['!ref'];
-    const last_row = parseInt(
+    const lastRow = parseInt(
       (sheet_range as string).split(':')[1].split('').slice(1).join('')
     );
-    console.log(`last_row = ${last_row}`);
+    // console.log(`lastRow = ${lastRow}`);
 
     return {
-      ...this.extractDepotDetails(ws, wsname, last_row),
-      route_schedule: this.extractRouteDetails(ws, wsname, last_row - 2),
+      ...this.extractDepotDetails(ws, wsname, lastRow),
+      routeSchedule: this.extractRouteDetails(ws, wsname, lastRow - 2),
     } as ScheduleData;
   }
 
   extractDepotDetails(
     ws: WorkSheet,
     wsname: string,
-    last_row: number
+    lastRow: number
   ): {
-    depot_departure_details: DepotDetails;
-    depot_arrival_details: DepotDetails;
+    depotDepartureDetails: DepotDetails;
+    depotArrivalDetails: DepotDetails;
   } {
-    const depot_details_header = [
-      'depot_name',
-      'latitude',
-      'longitude',
-      'coordinate',
-      'arrival_time',
-      'departure_time',
-    ];
+    let ranges = [`B5:J6`, `B${lastRow - 1}:J${lastRow}`];
+    let cleanedData = [];
 
-    const depot_departure_index = `B6:J6`;
-    const depot_arrival_index = `B${last_row}:J${last_row}`;
-
-    const depot_departure_details: DepotDetails =
-      utils.sheet_to_json<DepotDetails>(ws, {
-        range: depot_departure_index,
-        header: depot_details_header,
-      })[0];
-    const depot_arrival_details: DepotDetails =
-      utils.sheet_to_json<DepotDetails>(ws, {
-        range: depot_arrival_index,
-        header: depot_details_header,
+    for (let range of ranges) {
+      let data = utils.sheet_to_json<any>(ws, {
+        range: range,
+        defval: '',
       })[0];
 
-    console.log(depot_departure_details);
-    console.log(depot_arrival_details);
+      let depoSchedule: { [x: string]: any } = {};
+
+      for (let key in data) {
+        const value = data[key];
+        if (value === '' && key.startsWith('__EMPTY')) {
+          continue;
+        }
+        const cleanedKey = key.trim().toLowerCase().replace(/\s/g, '_');
+        depoSchedule[cleanedKey] = value;
+      }
+      cleanedData.push(depoSchedule as DepotDetails);
+    }
+
+    const [depotDepartureDetails, depotArrivalDetails] = cleanedData;
 
     return {
-      depot_departure_details,
-      depot_arrival_details,
+      depotDepartureDetails,
+      depotArrivalDetails,
     };
   }
 
   extractRouteDetails(
     ws: WorkSheet,
     wsname: string,
-    last_row: number
+    lastRow: number
   ): RouteSchedule[] {
-    const route_data: RouteSchedule[] = [];
+    const routeData: RouteSchedule[] = [];
 
+    // get the keys from the interface
     const route_schedule_header = [
       'round',
       'num',
       'direction',
-      'bus_stop',
+      'busStop',
       'latitude',
       'longitude',
       'coordinate',
-      'arrival_time',
-      'departure_time',
+      'arrival',
+      'departure',
     ];
 
-    for (let i = 8; i <= last_row; i++) {
-      const ws_data: RouteSchedule = utils.sheet_to_json<RouteSchedule>(ws, {
+    let currentRound: unknown;
+    let currentDirection: unknown;
+
+    for (let i = 8; i <= lastRow; i++) {
+      const wsData: RouteSchedule = utils.sheet_to_json<RouteSchedule>(ws, {
         range: `B${i}:J${i}`,
         header: route_schedule_header,
+        defval: '',
       })[0];
 
-      if (ws_data.round === 'BREAK TIME') {
-        console.log(`Excluding BREAK_TIME at index ${i}`);
+      if (wsData.round === 'BREAK TIME') {
+        // console.log(`Excluding BREAK_TIME at index ${i}`);
         continue;
       }
 
-      route_data.push(ws_data);
+      wsData.round !== ''
+        ? (currentRound = wsData.round.trim())
+        : (wsData.round = currentRound as string);
+
+      wsData.direction !== ''
+        ? (currentDirection = wsData.direction.trim())
+        : (wsData.direction = currentDirection as string);
+
+      wsData.latitude = (wsData.latitude as string).trim();
+      wsData.longitude = (wsData.longitude as string).trim();
+      wsData.coordinate = (wsData.coordinate as string).trim();
+
+      if (typeof wsData.arrival === 'string') {
+        wsData.arrival = wsData.arrival.trim();
+        // console.error('Invalid arrival time string provided:', wsData);
+      }
+
+      if (typeof wsData.departure === 'string') {
+        wsData.departure = wsData.departure.trim();
+        // console.error('Invalid departure time string provided:', wsData);
+      }
+
+      this.routes.add(this.gtfsUtils.normaliseRouteName(wsData.direction));
+      this.addStops(wsData);
+      routeData.push(wsData);
     }
 
-    console.log(route_data.length);
-
-    return route_data;
+    return routeData;
   }
+
+  addStops(wsData: RouteSchedule) {
+    const { busStop, coordinate } = wsData;
+    const [latitude, longitude] = (coordinate as string).trim().split(',');
+    const key = this.gtfsUtils.generateStopCode(busStop);
+    if (this.stops.has(key)) {
+      return;
+    }
+    this.stops.set(key, { name: busStop, latitude, longitude });
+  }
+
+  // end of class
 }
 
-// create interface for the route schedule
-export interface RouteSchedule {
-  round: string;
-  num: number;
-  direction: string;
-  bus_stop: string;
-  latitude: number | string;
-  longitude: number | string;
-  coordinate: string | number;
-  arrival_time: string | Date;
-  departure_time: string | Date;
-}
-
-export interface DepotDetails {
-  depot_name: string;
-  latitude: number | string;
-  longitude: number | string;
-  coordinate: string | number;
-  arrival_time: string | Date;
-  departure_time: string | Date;
-}
-
-export interface ScheduleData {
-  depot_departure_details: DepotDetails;
-  depot_arrival_details: DepotDetails;
-  route_schedule: RouteSchedule[];
-}
-
-export interface RouteData {
-  [schedule_name: string]: ScheduleData;
+export interface BusStopData {
+  name: string;
+  latitude: string;
+  longitude: string;
 }

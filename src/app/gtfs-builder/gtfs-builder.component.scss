@@ -1,0 +1,71 @@
+.gtfs-container {
+  margin-top: 20px;
+}
+
+.gtfs-card {
+  width: 95%;
+  margin: auto;
+  background-color: #e1e5f2;
+  padding: 10px;
+
+  .card-header {
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .gtfs-title {
+    font-weight: semi-bold;
+  }
+
+  .gtfs-subtitle {
+    color: #797878;
+  }
+
+  .gtfs-buttons {
+    margin-right: 30px;
+  }
+
+  .upload-button {
+    color: #ffffff;
+    background-color: #774ed6;
+  }
+
+  .gtfs-data-upload-card {
+    margin-top: 20px;
+  }
+}
+
+.performance-metrics {
+  background-color: #77bea9;
+  padding: 4px 15px;
+  border-radius: 8px;
+  b {
+    color: rgb(5, 73, 3);
+  }
+}
+
+.data-error {
+  // width: 100%;
+  text-align: center;
+  background-color: #f8c4c4;
+  color: #991c1c;
+  border-radius: 15px;
+  padding: 30px;
+}
+
+@media (max-width: 600px) {
+  .card-header {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gtfs-card {
+    width: 98%;
+    margin: auto;
+    padding: 3px;
+  }
+
+  .gtfs-buttons {
+    margin: 4px;
+  }
+}

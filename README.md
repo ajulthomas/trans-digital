@@ -1,59 +1,161 @@
-# TransDigital
+# TRANS DIGITAL – GTFS Builder
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.7.
+A lightning-fast, web-based tool that turns raw bus-schedule spreadsheets into **GTFS-compliant** zip files in just **0.3 seconds (≈ 300 000 × faster than the manual macro workflow)**, complete with route maps and instant data validation .
 
-## Development server
+---
 
-To start a local development server, run:
+## Table of contents
 
-```bash
-ng serve
+1. [Why TRANS DIGITAL?](#why-trans-digital)
+2. [Key features](#key-features)
+3. [Tech stack](#tech-stack)
+4. [Quick start](#quick-start)
+5. [Project structure](#project-structure)
+6. [Development process](#development-process)
+7. [Road-map](#road-map)
+8. [Contributing](#contributing)
+9. [License](#license)
+10. [Acknowledgements](#acknowledgements)
+
+---
+
+## Why TRANS DIGITAL?
+
+Electric-bus fleet planners (e.g., Batik Solo Trans in Solo, Indonesia) rely on BetterFleet, which requires data in GTFS format. The existing Excel-macro workflow is slow, error-prone and complicated. **TRANS DIGITAL**—built by Team VINC (UC Capstone, NEVCE partner)—automates the conversion, slashes processing time, and shows routes on a map so planners can spot mistakes instantly .
+
+---
+
+## Key features
+
+| #   | Feature                                                                                                  | Benefit                                                                          |
+| --- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1   | **Simple .xlsx upload**                                                                                  | No scripting required                                                            |
+| 2   | **SheetJS parser → GTFS converter**                                                                      | Generates all 8 core GTFS text files                                             |
+| 3   | **Interactive data preview tabs** (Overview, Agency, Calendar, Routes, Trips, Stops, Stop Times, Shapes) | Instant sanity checks                                                            |
+| 4   | **Google Maps visualisation**                                                                            | Street & satellite views of routes/stops                                         |
+| 5   | **One-click ZIP & download**                                                                             | Ready to upload to journey planners                                              |
+| 6   | **Device-agnostic UI**                                                                                   | Works on desktop & mobile                                                        |
+| 7   | **Demo site**                                                                                            | [https://trans-digital-dev.netlify.app/](https://trans-digital-dev.netlify.app/) |
+
+---
+
+## Tech stack
+
+| Layer                                                                   | Tools                                |
+| ----------------------------------------------------------------------- | ------------------------------------ |
+| Front end                                                               | **Angular** (TypeScript)             |
+| Parsing & conversion                                                    | **SheetJS**, custom GTFS transformer |
+| Mapping                                                                 | **Google Maps Platform**             |
+| DevOps / Hosting                                                        | **GitHub**, **Netlify**              |
+| PM / Docs                                                               | **Jira**, **Notion**                 |
+| All chosen for rapid delivery during eight weekly Agile-SCRUM sprints . |                                      |
+
+---
+
+## Quick start
+
+### Prerequisites
+
+- **Node 22.x** (managed with `fnm`)&#x20;
+- Git
+
+### Setup
+
+```powershell
+# 1. Install fnm (Fast Node Manager)
+winget install Schniz.fnm   # Windows example
+
+# 2. Install & activate Node 22
+fnm install 22
+fnm use 22
+
+# 3. Verify versions
+node -v   # v22.14.0+
+npm  -v   # 10.9.2+
+
+# 4. Clone the repo
+git clone https://github.com/ajulthomas/trans-digital
+cd trans-digital
+
+# 5. Install dependencies & run
+npm install
+npm run start     # or: ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Project structure
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+```
+/
+├─ .angular/
+├─ .vscode/
+├─ node_modules/
+├─ public/
+├─ src/
+│  ├─ app/
+│  │  ├─ agency-details/        # component: agency table & modal
+│  │  ├─ calendar-details/      # component: calendar/date view
+│  │  ├─ data-table/            # reusable data-grid wrapper
+│  │  ├─ gtfs-builder/          # wizard for XLSX ➜ GTFS
+│  │  ├─ navbar/                # top-level navigation bar
+│  │  ├─ overview/              # dashboard landing page
+│  │  ├─ route-map/             # Google Maps route visualiser
+│  │  ├─ services/              # shared Angular services
+│  │  │  ├─ excel-utils.service.ts
+│  │  │  ├─ gtfs-utils.service.ts
+│  │  │  ├─ gtfs.service.ts
+│  │  │  ├─ map-utils.service.ts
+│  │  │  └─ message.service.ts
+│  │  ├─ types/                 # TypeScript interfaces & models
+│  │  │  ├─ gtfs.interface.ts
+│  │  │  └─ route-data.interface.ts
+│  │  ├─ app.component.html
+│  │  ├─ app.component.scss
+│  │  ├─ app.component.ts
+│  │  ├─ app.config.ts
+│  │  └─ app.routes.ts
+│  ├─ environments/
+│  │  └─ environment.*.ts       # dev / prod configs
+│  ├─ index.html
+│  ├─ main.ts
+│  └─ styles.scss
+├─ angular.json
+├─ package.json
+├─ package-lock.json
+├─ tsconfig.app.json
+└─ README.md
 
-```bash
-ng generate component component-name
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## Development process
 
-## Building
+The team followed **Agile-SCRUM** across **8 weekly sprints**, delivering incremental demos to NEVCE and iterating on feedback to reach the sub-second conversion milestone .
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## Road-map
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Planned enhancements include :
 
-## Running unit tests
+- Accept additional input/output formats.
+- In-app route editing & shape plotting.
+- Inclusive-planning filters (e.g., accessible stops).
+- Multi-tenant back-end with database storage to eliminate file redundancy.
+- Trip-planning validation & external operations-system integrations.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
+## Contributing
 
-## Running end-to-end tests
+1. Fork the repository, create a feature branch, and open a PR.
+2. Follow Angular’s commit-message guidelines.
+3. Write unit tests where possible.
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## Acknowledgements
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Special thanks to project sponsor **Toby Roxburgh** and mentor **Shaun Crain** for their guidance, and to **NEVCE** for domain expertise and data access .
