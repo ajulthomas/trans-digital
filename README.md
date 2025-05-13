@@ -79,7 +79,12 @@ cd trans-digital
 
 # 5. Install dependencies & run
 npm install
-npm run start     # or: ng serve
+npm run start
+
+# 6. Build the app
+npm run build:dev # the built files will be placed within dist\browser folder
+# copy these files an place them in the server to be complete the deployment
+
 ```
 
 ---
